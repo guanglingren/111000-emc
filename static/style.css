@@ -214,21 +214,19 @@ nav a:hover {
   }
 
   .card {
-    max-height: calc(100vh - 170px);
-    overflow: hidden;
+    max-height: none;
+    overflow: visible;
   }
 
   .card-body {
-    overflow-y: auto;
-    max-height: calc(100vh - 240px);
-    padding-bottom: 0;
+    overflow: visible;
+    max-height: none;
+    padding-bottom: 20px;
   }
 
   .card-head {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: var(--bg-card);
+    position: static;
+    background: transparent;
     padding-top: 18px;
   }
 }
