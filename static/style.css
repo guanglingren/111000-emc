@@ -212,6 +212,25 @@ nav a:hover {
     flex: 1 1 100%;
     min-width: 0;
   }
+
+  .card {
+    max-height: calc(100vh - 170px);
+    overflow: hidden;
+  }
+
+  .card-body {
+    overflow-y: auto;
+    max-height: calc(100vh - 240px);
+    padding-bottom: 0;
+  }
+
+  .card-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bg-card);
+    padding-top: 18px;
+  }
 }
 
 /* ===== Main ===== */
