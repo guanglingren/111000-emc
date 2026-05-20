@@ -8,6 +8,16 @@ Built with Flask. Designed to deploy on Render's free tier.
 1. **Microstrip Characteristic Impedance** — Hammerstad–Jensen closed-form with copper-thickness correction. Returns Z₀, effective εᵣ, velocity factor, and propagation delay.
 2. **Near-Field / Far-Field Boundary** — λ/2π reactive boundary, 3λ small-radiator far-field, and 2D²/λ Fraunhofer distance for apertures.
 3. **Shielding Effectiveness** — Schelkunoff plane-wave model: absorption + reflection + multi-reflection correction, plus skin depth.
+4. **dB / Ratio Converter** — power and voltage ratio conversions between dB and linear scale.
+5. **dBm ↔ mW Converter** — RF power conversion between dBm and milliwatts.
+6. **VSWR / Return Loss Converter** — computes VSWR, return loss, and reflection coefficient.
+7. **Frequency / Wavelength Converter** — converts between MHz and meters for HF planning.
+8. **Coaxial Impedance Calculator** — calculates the characteristic impedance of a coaxial line from D, d and εᵣ.
+9. **Quarter-Wave Transformer** — computes the matching transformer impedance and optional λ/4 length.
+10. **Attenuation Calculator** — computes total cable loss from dB/m and length, plus power/voltage ratios.
+11. **Coaxial Loss Model** — estimates conductor loss, dielectric loss, and total attenuation for coaxial cable.
+12. **PCB Impedance Calculator** — computes single-ended microstrip impedance and differential impedance for paired traces.
+13. **HF Band & Antenna Formulas** — identifies the HF amateur band and computes λ/4 and λ/2 antenna lengths.
 
 ## Run locally
 
