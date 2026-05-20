@@ -446,6 +446,18 @@ button[type="submit"]:disabled {
   border-bottom: 1px dashed var(--border);
 }
 
+/* ===== Mobile card override ===== */
+.card,
+.card-body {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.card-head {
+  position: static !important;
+}
+
 .r-main .label {
   font-size: 11px;
   color: var(--text-dim);
