@@ -160,6 +160,10 @@ nav a:hover {
   background: rgba(212, 255, 63, 0.1);
 }
 
+.sub-nav.hidden {
+  display: none !important;
+}
+
 .card.hidden {
   display: none;
 }

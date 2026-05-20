@@ -553,6 +553,8 @@ const groups = cards.reduce((acc, card) => {
   return acc;
 }, {});
 
+cards.forEach(card => card.classList.add("hidden"));
+
 function updateCardVisibility() {
   cards.forEach(card => {
     if (card.dataset.group !== activeGroup) {
@@ -572,8 +574,14 @@ function setActiveCard(cardId) {
 }
 
 function renderSubNav(group) {
+  const groupCards = groups[group] || [];
   subNav.innerHTML = "";
-  (groups[group] || []).forEach(card => {
+  if (groupCards.length <= 1) {
+    subNav.classList.add("hidden");
+  } else {
+    subNav.classList.remove("hidden");
+  }
+  groupCards.forEach(card => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "sub-tab";
@@ -582,8 +590,8 @@ function renderSubNav(group) {
     btn.addEventListener("click", () => setActiveCard(card.id));
     subNav.append(btn);
   });
-  if ((groups[group] || []).length > 0) {
-    setActiveCard((groups[group] || [])[0].id);
+  if (groupCards.length > 0) {
+    setActiveCard(groupCards[0].id);
   }
 }
 
