@@ -216,32 +216,6 @@ nav a:hover {
   main {
     padding: 18px 12px;
   }
-
-  .card {
-    position: relative !important;
-    display: block !important;
-    width: 100% !important;
-    max-height: calc(100vh - 120px) !important;
-    margin-bottom: 16px;
-    overflow: hidden !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-  }
-
-  .card-body {
-    display: block !important;
-    overflow-y: auto !important;
-    max-height: calc(100vh - 180px) !important;
-    height: auto !important;
-    padding-bottom: 16px;
-  }
-
-  .card-head {
-    position: sticky !important;
-    top: 0;
-    z-index: 1;
-    background: rgba(22, 24, 28, 0.98) !important;
-    padding-top: 18px;
-  }
 }
 
 /* ===== Main ===== */
