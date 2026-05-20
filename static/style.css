@@ -168,7 +168,7 @@ nav a:hover {
   display: none;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 920px) {
   .masthead-inner {
     flex-direction: column;
     align-items: stretch;
@@ -177,20 +177,40 @@ nav a:hover {
   .group-nav,
   .sub-nav {
     justify-content: center;
+    gap: 8px;
   }
 
   .group-nav a,
   .sub-nav button {
-    flex: 1 1 100%;
-    min-width: 0;
+    flex: 1 1 auto;
+    min-width: 120px;
+    font-size: 11px;
+    padding: 8px 14px;
   }
 
-  main {
-    padding: 24px 18px;
+  .card-head {
+    padding: 18px 20px 16px;
   }
 
   .card-body {
     gap: 0;
+  }
+
+  .inputs,
+  .results {
+    padding: 20px;
+  }
+
+  main {
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .group-nav a,
+  .sub-nav button {
+    flex: 1 1 100%;
+    min-width: 0;
   }
 }
 
@@ -263,7 +283,7 @@ main {
   gap: 0;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 920px) {
   .card-body { grid-template-columns: 1fr; }
 }
 
@@ -275,8 +295,20 @@ main {
   gap: 14px;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 920px) {
   .inputs { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+@media (max-width: 720px) {
+  .inputs label {
+    grid-template-columns: 1fr;
+  }
+  .inputs label em {
+    grid-column: 1;
+    grid-row: auto;
+    margin: 0;
+    position: static;
+  }
 }
 
 .inputs label {
