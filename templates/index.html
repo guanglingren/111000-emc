@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMC Tools — 电磁兼容计算器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <span class="brand-mark">⌬</span>
+      <div>
+        <h1>EMC Tools</h1>
+        <p class="sub">Electromagnetic compatibility calculators for working engineers</p>
+      </div>
+    </div>
+    <nav>
+      <a href="#microstrip">Microstrip Z₀</a>
+      <a href="#nearfield">Near / Far Field</a>
+      <a href="#shielding">Shielding</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ====== Microstrip ====== -->
+<section id="microstrip" class="card">
+  <div class="card-head">
+    <span class="tag">01</span>
+    <h2>Microstrip Characteristic Impedance</h2>
+    <p>Hammerstad–Jensen 闭式解，含导体厚度修正。适用于 PCB 单端走线匹配 (50 Ω / 75 Ω / 100 Ω)。</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="microstrip">
+      <label>Trace width <span>W</span>
+        <input name="w" type="number" step="0.001" value="0.4" required>
+        <em>mm</em>
+      </label>
+      <label>Dielectric height <span>H</span>
+        <input name="h" type="number" step="0.001" value="0.2" required>
+        <em>mm</em>
+      </label>
+      <label>Copper thickness <span>T</span>
+        <input name="t" type="number" step="0.001" value="0.035" required>
+        <em>mm</em>
+      </label>
+      <label>Dielectric constant <span>εᵣ</span>
+        <input name="er" type="number" step="0.01" value="4.3" required>
+        <em></em>
+      </label>
+      <button type="submit">Compute</button>
+    </form>
+    <div class="results" data-result="microstrip">
+      <div class="r-main"><span class="label">Z₀</span><span class="value">—</span><span class="unit">Ω</span></div>
+      <div class="r-grid">
+        <div><span class="label">ε_eff</span><span class="value" data-key="er_eff">—</span></div>
+        <div><span class="label">vₚ / c</span><span class="value" data-key="vp_fraction">—</span></div>
+        <div><span class="label">Delay</span><span class="value" data-key="delay">—</span><em>ps/mm</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Near / Far Field ====== -->
+<section id="nearfield" class="card">
+  <div class="card-head">
+    <span class="tag">02</span>
+    <h2>Near-Field / Far-Field Boundary</h2>
+    <p>判断测量距离落在哪个场区。Reactive (λ/2π)、辐射近场、Fraunhofer 远场 (2D²/λ)。</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="nearfield">
+      <label>Frequency
+        <input name="freq" type="number" step="0.01" value="100" required>
+        <em>MHz</em>
+      </label>
+      <label>Aperture / antenna size <span>D (optional)</span>
+        <input name="d" type="number" step="0.001" value="">
+        <em>m</em>
+      </label>
+      <button type="submit">Compute</button>
+    </form>
+    <div class="results" data-result="nearfield">
+      <div class="r-main"><span class="label">λ</span><span class="value" data-key="wavelength_m">—</span><span class="unit">m</span></div>
+      <div class="r-grid">
+        <div><span class="label">Reactive boundary</span><span class="value" data-key="reactive_m">—</span><em>m</em></div>
+        <div><span class="label">Far field (small)</span><span class="value" data-key="far_small_m">—</span><em>m</em></div>
+        <div><span class="label">Far field (aperture)</span><span class="value" data-key="far_large_m">—</span><em>m</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Shielding Effectiveness ====== -->
+<section id="shielding" class="card">
+  <div class="card-head">
+    <span class="tag">03</span>
+    <h2>Shielding Effectiveness (Plane Wave)</h2>
+    <p>Schelkunoff 模型：吸收损耗 A + 反射损耗 R + 多次反射修正 B。适用于远场平面波。</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="shielding">
+      <label>Frequency
+        <input name="freq" type="number" step="0.01" value="100" required>
+        <em>MHz</em>
+      </label>
+      <label>Thickness
+        <input name="t" type="number" step="0.001" value="0.5" required>
+        <em>mm</em>
+      </label>
+      <label>σᵣ <span>(rel. Cu)</span>
+        <input name="sigma_r" type="number" step="0.01" value="1.0" required>
+        <em></em>
+      </label>
+      <label>μᵣ
+        <input name="mu_r" type="number" step="0.1" value="1.0" required>
+        <em></em>
+      </label>
+      <button type="submit">Compute</button>
+    </form>
+    <div class="results" data-result="shielding">
+      <div class="r-main"><span class="label">SE_total</span><span class="value" data-key="se_total">—</span><span class="unit">dB</span></div>
+      <div class="r-grid">
+        <div><span class="label">Absorption A</span><span class="value" data-key="absorption">—</span><em>dB</em></div>
+        <div><span class="label">Reflection R</span><span class="value" data-key="reflection">—</span><em>dB</em></div>
+        <div><span class="label">Multi-refl B</span><span class="value" data-key="multi_refl">—</span><em>dB</em></div>
+        <div><span class="label">Skin depth δ</span><span class="value" data-key="skin_depth_um">—</span><em>μm</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><em>Built with Flask · Hosted on Render</em></p>
+  <p class="hint">公式与近似适用于教学与一阶估算，关键设计请以仿真和实测为准。</p>
+</footer>
+
+<script>
+async function postJSON(url, payload) {
+  const r = await fetch(url, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  });
+  return r.json();
+}
+
+document.querySelectorAll("form[data-form]").forEach(form => {
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = form.dataset.form;
+    const data = Object.fromEntries(new FormData(form).entries());
+    const btn = form.querySelector("button");
+    btn.disabled = true; btn.textContent = "···";
+
+    try {
+      const result = await postJSON(`/api/${name}`, data);
+      const panel = document.querySelector(`[data-result="${name}"]`);
+      if (result.error) {
+        panel.querySelector(".r-main .value").textContent = "ERR";
+        console.error(result.error);
+      } else {
+        // Main result is the first key in the response
+        const mainKey = Object.keys(result)[0];
+        const mainEl = panel.querySelector(".r-main .value");
+        mainEl.textContent = result[mainKey] ?? "—";
+        // Fill in grid
+        panel.querySelectorAll("[data-key]").forEach(el => {
+          const v = result[el.dataset.key];
+          el.textContent = (v === null || v === undefined) ? "—" : v;
+        });
+        panel.classList.add("flash");
+        setTimeout(() => panel.classList.remove("flash"), 400);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      btn.disabled = false; btn.textContent = "Compute";
+    }
+  });
+});
+</script>
+
+</body>
+</html>
