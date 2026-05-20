@@ -20,28 +20,20 @@
         <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
       </div>
     </div>
-    <nav>
-      <a href="#microstrip">Mikrostreifen</a>
-      <a href="#nearfield">Nah-/Fernfeld</a>
-      <a href="#shielding">Abschirmung</a>
-      <a href="#db">dB-Konverter</a>
-      <a href="#power">dBm ↔ mW</a>
-      <a href="#vswr">VSWR / RL</a>
-      <a href="#wavelength">Frequenz / λ</a>
-      <a href="#coax">Koax</a>
-      <a href="#coaxloss">Koax-Verlust</a>
-      <a href="#pcb">PCB-Impedanz</a>
-      <a href="#quarter">Viertelwelle</a>
-      <a href="#attenuation">Dämpfung</a>
-      <a href="#hfband">HF Bänder</a>
+    <nav class="group-nav">
+      <a href="#main" data-tab="emv" class="active">EMV</a>
+      <a href="#main" data-tab="db">dB / Leistung</a>
+      <a href="#main" data-tab="cable">Kabel / PCB</a>
+      <a href="#main" data-tab="hf">HF / Antenne</a>
     </nav>
+    <div class="sub-nav" aria-label="Calculator tabs"></div>
   </div>
 </header>
 
-<main>
+<main id="main">
 
 <!-- ====== Microstrip ====== -->
-<section id="microstrip" class="card">
+<section id="microstrip" class="card" data-group="emv">
   <div class="card-head">
     <span class="tag">01</span>
     <h2>Mikrostreifen-Charakteristik</h2>
@@ -79,7 +71,7 @@
 </section>
 
 <!-- ====== Near / Far Field ====== -->
-<section id="nearfield" class="card">
+<section id="nearfield" class="card" data-group="emv">
   <div class="card-head">
     <span class="tag">02</span>
     <h2>Nahfeld / Fernfeld</h2>
@@ -109,7 +101,7 @@
 </section>
 
 <!-- ====== Shielding Effectiveness ====== -->
-<section id="shielding" class="card">
+<section id="shielding" class="card" data-group="emv">
   <div class="card-head">
     <span class="tag">03</span>
     <h2>Abschirmwirkung</h2>
@@ -148,7 +140,7 @@
 </section>
 
 <!-- ====== dB Converter ====== -->
-<section id="db" class="card">
+<section id="db" class="card" data-group="db">
   <div class="card-head">
     <span class="tag">04</span>
     <h2>dB / Verhältnis-Konverter</h2>
@@ -187,7 +179,7 @@
 </section>
 
 <!-- ====== dBm / mW Converter ====== -->
-<section id="power" class="card">
+<section id="power" class="card" data-group="db">
   <div class="card-head">
     <span class="tag">05</span>
     <h2>dBm ↔ mW</h2>
@@ -219,7 +211,7 @@
 </section>
 
 <!-- ====== VSWR / Return Loss ====== -->
-<section id="vswr" class="card">
+<section id="vswr" class="card" data-group="db">
   <div class="card-head">
     <span class="tag">06</span>
     <h2>VSWR / Rückflussdämpfung</h2>
@@ -244,13 +236,14 @@
         <div><span class="label">VSWR</span><span class="value" data-key="vswr">—</span></div>
         <div><span class="label">Return Loss</span><span class="value" data-key="return_loss">—</span><em>dB</em></div>
         <div><span class="label">Reflexionsfaktor</span><span class="value" data-key="gamma">—</span></div>
+        <div><span class="label">Mismatch-Verlust</span><span class="value" data-key="mismatch_loss">—</span><em>dB</em></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ====== Frequency / Wavelength ====== -->
-<section id="wavelength" class="card">
+<section id="wavelength" class="card" data-group="db">
   <div class="card-head">
     <span class="tag">07</span>
     <h2>Frequenz / Wellenlänge</h2>
@@ -280,7 +273,7 @@
 </section>
 
 <!-- ====== Coaxial Impedance ====== -->
-<section id="coax" class="card">
+<section id="coax" class="card" data-group="cable">
   <div class="card-head">
     <span class="tag">08</span>
     <h2>Koaxiale Impedanz</h2>
@@ -313,7 +306,7 @@
 </section>
 
 <!-- ====== Quarter-Wave Transformer ====== -->
-<section id="quarter" class="card">
+<section id="quarter" class="card" data-group="cable">
   <div class="card-head">
     <span class="tag">09</span>
     <h2>Viertelwellen-Transformator</h2>
@@ -346,7 +339,7 @@
 </section>
 
 <!-- ====== Attenuation ====== -->
-<section id="attenuation" class="card">
+<section id="attenuation" class="card" data-group="cable">
   <div class="card-head">
     <span class="tag">10</span>
     <h2>Dämpfung</h2>
@@ -375,7 +368,7 @@
 </section>
 
 <!-- ====== Coaxial Loss Model ====== -->
-<section id="coaxloss" class="card">
+<section id="coaxloss" class="card" data-group="cable">
   <div class="card-head">
     <span class="tag">11</span>
     <h2>Koax-Verlustmodell</h2>
@@ -421,7 +414,7 @@
 </section>
 
 <!-- ====== PCB Impedance ====== -->
-<section id="pcb" class="card">
+<section id="pcb" class="card" data-group="cable">
   <div class="card-head">
     <span class="tag">12</span>
     <h2>PCB-Impedanz</h2>
@@ -463,7 +456,7 @@
 </section>
 
 <!-- ====== HF Bands / Antenne ====== -->
-<section id="hfband" class="card">
+<section id="hfband" class="card" data-group="hf">
   <div class="card-head">
     <span class="tag">13</span>
     <h2>HF-Bänder & Antenne</h2>
@@ -489,6 +482,47 @@
   </div>
 </section>
 
+<!-- ====== Electrical Length ====== -->
+<section id="electrical" class="card" data-group="hf">
+  <div class="card-head">
+    <span class="tag">14</span>
+    <h2>Elektrische Leitungslänge</h2>
+    <p>Berechnet die physikalische Länge für eine gewünschte elektrische Phasenverschiebung oder umgekehrt.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="electrical">
+      <label>Frequenz
+        <input name="freq" type="number" step="0.01" value="14" required>
+        <em>MHz</em>
+      </label>
+      <label>Geschwindigkeitsfaktor
+        <input name="vf" type="number" step="0.001" value="0.7" required>
+        <em></em>
+      </label>
+      <label>Elektrische Länge
+        <input name="degrees" type="number" step="0.1" value="90">
+        <em>Grad</em>
+      </label>
+      <label>Physikalische Länge
+        <input name="length_mm" type="number" step="0.1" value="">
+        <em>mm</em>
+      </label>
+      <p style="font-size:12px;color:#8a8f99;">Geben Sie entweder Grad oder Länge ein. Das jeweils andere Ergebnis wird berechnet.</p>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="electrical">
+      <div class="r-main"><span class="label">Ergebnis</span><span class="value">—</span></div>
+      <div class="r-grid">
+        <div><span class="label">Frequenz</span><span class="value" data-key="frequency_mhz">—</span><em>MHz</em></div>
+        <div><span class="label">Geschwindigkeitsfaktor</span><span class="value" data-key="velocity_factor">—</span></div>
+        <div><span class="label">Wellenlänge</span><span class="value" data-key="wavelength_m">—</span><em>m</em></div>
+        <div><span class="label">Länge</span><span class="value" data-key="length_mm">—</span><em>mm</em></div>
+        <div><span class="label">Elektrische Länge</span><span class="value" data-key="degrees">—</span><em>°</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
@@ -506,6 +540,70 @@ async function postJSON(url, payload) {
   return r.json();
 }
 
+const tabLinks = document.querySelectorAll("nav.group-nav a");
+const subNav = document.querySelector(".sub-nav");
+const cards = Array.from(document.querySelectorAll(".card[data-group]"));
+let activeGroup = "emv";
+let activeCardId = null;
+
+const groups = cards.reduce((acc, card) => {
+  const group = card.dataset.group;
+  if (!acc[group]) acc[group] = [];
+  acc[group].push(card);
+  return acc;
+}, {});
+
+function updateCardVisibility() {
+  cards.forEach(card => {
+    if (card.dataset.group !== activeGroup) {
+      card.classList.add("hidden");
+      return;
+    }
+    card.classList.toggle("hidden", card.id !== activeCardId);
+  });
+}
+
+function setActiveCard(cardId) {
+  activeCardId = cardId;
+  updateCardVisibility();
+  subNav.querySelectorAll("button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.card === cardId);
+  });
+}
+
+function renderSubNav(group) {
+  subNav.innerHTML = "";
+  (groups[group] || []).forEach(card => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "sub-tab";
+    btn.dataset.card = card.id;
+    btn.textContent = card.querySelector(".card-head h2").textContent;
+    btn.addEventListener("click", () => setActiveCard(card.id));
+    subNav.append(btn);
+  });
+  if ((groups[group] || []).length > 0) {
+    setActiveCard((groups[group] || [])[0].id);
+  }
+}
+
+function switchGroup(group) {
+  activeGroup = group;
+  tabLinks.forEach(link => {
+    link.classList.toggle("active", link.dataset.tab === group);
+  });
+  renderSubNav(group);
+}
+
+switchGroup(activeGroup);
+
+tabLinks.forEach(link => {
+  link.addEventListener("click", e => {
+    e.preventDefault();
+    switchGroup(link.dataset.tab);
+  });
+});
+
 document.querySelectorAll("form[data-form]").forEach(form => {
   form.addEventListener("submit", async e => {
     e.preventDefault();
@@ -521,7 +619,9 @@ document.querySelectorAll("form[data-form]").forEach(form => {
         panel.querySelector(".r-main .value").textContent = "ERR";
         console.error(result.error);
       } else {
-        const mainKey = Object.keys(result)[0];
+        const mainKey = name === "electrical"
+          ? (data.degrees ? "length_mm" : "degrees")
+          : Object.keys(result)[0];
         const mainEl = panel.querySelector(".r-main .value");
         mainEl.textContent = result[mainKey] ?? "—";
         panel.querySelectorAll("[data-key]").forEach(el => {

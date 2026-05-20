@@ -281,10 +281,12 @@ def api_vswr():
         else:
             return jsonify({"error": "Bitte VSWR oder Return Loss eingeben."}), 400
 
+        mismatch_loss = -10 * math.log10(1 - gamma**2)
         return jsonify({
             "vswr": round(vswr, 3),
             "return_loss": round(rl, 2),
             "gamma": round(gamma, 4),
+            "mismatch_loss": round(mismatch_loss, 2),
         })
     except (ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
@@ -315,6 +317,48 @@ def api_wavelength():
             })
         return jsonify({"error": "Bitte Frequenz oder Wellenlänge eingeben."}), 400
     except (ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/electrical", methods=["POST"])
+def api_electrical():
+    """
+    Electrical length calculator for RF lines.
+    Inputs: freq (MHz), vf, degrees or length_mm.
+    """
+    try:
+        data = request.get_json()
+        freq_mhz = float(data["freq"])
+        vf = float(data.get("vf") or 1)
+        degrees_raw = data.get("degrees")
+        length_mm_raw = data.get("length_mm")
+
+        if freq_mhz <= 0 or vf <= 0 or vf > 1:
+            return jsonify({"error": "Frequenz muss positiv sein und vf muss im Bereich 0..1 liegen."}), 400
+
+        wavelength = C0 / (freq_mhz * 1e6)
+        degrees = float(degrees_raw) if degrees_raw not in (None, "") else None
+        length_mm = float(length_mm_raw) if length_mm_raw not in (None, "") else None
+
+        if degrees is None and length_mm is None:
+            return jsonify({"error": "Bitte entweder Grad oder Länge eingeben."}), 400
+
+        if degrees is not None:
+            length_m = wavelength * vf * degrees / 360
+            length_mm = length_m * 1000
+        else:
+            length_m = length_mm / 1000
+            degrees = length_m / (wavelength * vf) * 360
+
+        return jsonify({
+            "frequency_mhz": round(freq_mhz, 4),
+            "velocity_factor": round(vf, 4),
+            "wavelength_m": round(wavelength, 4),
+            "length_m": round(length_m, 4),
+            "length_mm": round(length_mm, 2),
+            "degrees": round(degrees, 2),
+        })
+    except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 

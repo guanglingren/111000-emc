@@ -18,6 +18,7 @@ Built with Flask. Designed to deploy on Render's free tier.
 11. **Coaxial Loss Model** — estimates conductor loss, dielectric loss, and total attenuation for coaxial cable.
 12. **PCB Impedance Calculator** — computes single-ended microstrip impedance and differential impedance for paired traces.
 13. **HF Band & Antenna Formulas** — identifies the HF amateur band and computes λ/4 and λ/2 antenna lengths.
+14. **Electrical Length Calculator** — converts electrical degrees to physical line length and vice versa for a given frequency and velocity factor.
 
 ## Run locally
 

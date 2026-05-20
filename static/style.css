@@ -102,6 +102,94 @@ nav a:hover {
   border-color: var(--accent);
 }
 
+.group-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.group-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.group-nav a.active,
+.group-nav a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(212, 255, 63, 0.1);
+}
+
+.sub-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sub-nav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.sub-nav button.active,
+.sub-nav button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(212, 255, 63, 0.1);
+}
+
+.card.hidden {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .masthead-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .group-nav,
+  .sub-nav {
+    justify-content: center;
+  }
+
+  .group-nav a,
+  .sub-nav button {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  main {
+    padding: 24px 18px;
+  }
+
+  .card-body {
+    gap: 0;
+  }
+}
+
 /* ===== Main ===== */
 main {
   max-width: 1100px;
