@@ -23,6 +23,7 @@ Built with Flask. Designed to deploy on Render's free tier.
 13. **Antenna Radiation Pattern** — polar plot of the radiation pattern of a centre-fed dipole.
 14. **Filter Calculator** — cutoff frequency, schematic and magnitude response of RC, RL and LC low-/high-pass filters.
 15. **Measurement Chain** — reconstructs the actual emission level from the receiver reading via antenna factor, cable loss, preamplifier and attenuator, with a signal-chain block diagram.
+16. **Measurement Uncertainty** — CISPR 16-4-2 uncertainty budget builder with editable contributions per automotive EMC test method (CISPR 25, ISO 11452), giving combined and expanded uncertainty (k = 2).
 
 ## Run locally
 

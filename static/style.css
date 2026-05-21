@@ -383,6 +383,151 @@ button[type="submit"]:disabled {
   color: var(--warn);
 }
 
+/* ===== Uncertainty budget table ===== */
+.card-wide .card-body {
+  display: block;
+  padding: 24px 32px;
+}
+
+.unc-method {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.unc-method select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 9px 12px;
+  border-radius: 2px;
+  max-width: 460px;
+}
+
+.unc-scroll {
+  overflow-x: auto;
+  margin: 16px 0 4px;
+}
+
+.unc-table {
+  width: 100%;
+  min-width: 440px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.unc-table th {
+  text-align: left;
+  font-weight: normal;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.unc-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.unc-table input,
+.unc-table select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 2px;
+  outline: none;
+}
+
+.unc-table input:focus,
+.unc-table select:focus {
+  border-color: var(--accent);
+}
+
+.unc-table .u-cell {
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.unc-row-del {
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+}
+
+.unc-row-del:hover {
+  color: var(--warn);
+}
+
+.unc-add {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.unc-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.unc-summary {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.unc-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.unc-summary .label {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.unc-summary .value {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.unc-summary em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
 /* ===== Results ===== */
 .results {
   padding: 24px 32px;
@@ -558,7 +703,8 @@ footer .hint {
   }
 
   .results,
-  .graph-panel {
+  .graph-panel,
+  .card-wide .card-body {
     padding: 20px;
   }
 
