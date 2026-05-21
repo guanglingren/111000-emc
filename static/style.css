@@ -197,6 +197,7 @@ main {
 }
 
 .inputs label {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
@@ -216,17 +217,13 @@ main {
 }
 
 .inputs label em {
+  position: absolute;
+  right: 12px;
+  bottom: 9px;
   font-style: normal;
   color: var(--text-faint);
   font-size: 11px;
-  min-width: 30px;
-  text-align: left;
-  grid-column: 2;
-  grid-row: 2;
-  margin-top: -32px;
-  margin-right: 12px;
   pointer-events: none;
-  position: relative;
   z-index: 1;
 }
 
@@ -247,6 +244,11 @@ main {
 .inputs input:focus,
 .inputs select:focus {
   border-color: var(--accent);
+}
+
+/* Keep typed values clear of the absolutely-positioned unit label */
+.inputs input {
+  padding-right: 44px;
 }
 
 .hint-line {
@@ -477,17 +479,6 @@ footer .hint {
 
   .brand h1 {
     font-size: 19px;
-  }
-
-  .inputs label {
-    grid-template-columns: 1fr;
-  }
-
-  .inputs label em {
-    grid-column: 1;
-    grid-row: auto;
-    margin: 0;
-    position: static;
   }
 
   .r-main .value {
