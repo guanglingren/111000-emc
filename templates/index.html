@@ -7,13 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=12">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=13">
 <script>
   (function () {
+    var t = "light";
     try {
-      var t = localStorage.getItem("emc-theme");
-      if (t) document.documentElement.dataset.theme = t;
+      t = localStorage.getItem("emc-theme") || "light";
     } catch (e) {}
+    document.documentElement.dataset.theme = t;
   })();
 </script>
 </head>
@@ -39,7 +40,7 @@
 <main id="main">
 
 <!-- ====== Magnetic Field Units ====== -->
-<section id="magfield" class="card">
+<section id="magfield" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">01</span>
     <h2>Magnetfeld-Einheiten</h2>
@@ -83,7 +84,7 @@
 </section>
 
 <!-- ====== Rise Time / Bandwidth ====== -->
-<section id="risetime" class="card">
+<section id="risetime" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">02</span>
     <h2>Anstiegszeit / Bandbreite</h2>
@@ -113,7 +114,7 @@
 </section>
 
 <!-- ====== Field Strength / Power Density ====== -->
-<section id="fieldstrength" class="card">
+<section id="fieldstrength" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">03</span>
     <h2>Feldstärke / Leistungsdichte</h2>
@@ -148,7 +149,7 @@
 </section>
 
 <!-- ====== dB Unit Converter ====== -->
-<section id="db" class="card">
+<section id="db" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">04</span>
     <h2>dB-Einheiten-Konverter</h2>
@@ -214,7 +215,7 @@
 </section>
 
 <!-- ====== VSWR / Return Loss ====== -->
-<section id="vswr" class="card">
+<section id="vswr" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">05</span>
     <h2>VSWR / Rückflussdämpfung</h2>
@@ -246,7 +247,7 @@
 </section>
 
 <!-- ====== Frequency / Wavelength ====== -->
-<section id="wavelength" class="card">
+<section id="wavelength" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">06</span>
     <h2>Frequenz / Wellenlänge</h2>
@@ -276,7 +277,7 @@
 </section>
 
 <!-- ====== Filter Calculator (graph) ====== -->
-<section id="filter" class="card">
+<section id="filter" class="card" data-category="basics">
   <div class="card-head">
     <span class="tag">07</span>
     <h2>Filter-Rechner</h2>
@@ -319,7 +320,7 @@
 </section>
 
 <!-- ====== Measurement Chain (graph) ====== -->
-<section id="chain" class="card">
+<section id="chain" class="card" data-category="lab">
   <div class="card-head">
     <span class="tag">08</span>
     <h2>Messkette (Störaussendung)</h2>
@@ -364,7 +365,7 @@
 </section>
 
 <!-- ====== RI Antenna Method (graph) ====== -->
-<section id="ri" class="card">
+<section id="ri" class="card" data-category="lab">
   <div class="card-head">
     <span class="tag">09</span>
     <h2>RI Antennenmethode</h2>
@@ -398,7 +399,7 @@
 </section>
 
 <!-- ====== BCI (graph) ====== -->
-<section id="bci" class="card">
+<section id="bci" class="card" data-category="lab">
   <div class="card-head">
     <span class="tag">10</span>
     <h2>BCI — Bulk Current Injection</h2>
@@ -428,7 +429,7 @@
 </section>
 
 <!-- ====== Measurement Uncertainty ====== -->
-<section id="uncertainty" class="card card-wide">
+<section id="uncertainty" class="card card-wide" data-category="lab">
   <div class="card-head">
     <span class="tag">11</span>
     <h2>Messunsicherheit</h2>
@@ -524,13 +525,25 @@ function goHome() {
   window.scrollTo(0, 0);
 }
 
-cards.forEach(card => {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.dataset.card = card.id;
-  btn.textContent = card.querySelector(".card-head h2").textContent;
-  btn.addEventListener("click", () => openCard(card.id));
-  tabNav.append(btn);
+const navCategories = [
+  {key: "basics", label: "Theoretische Grundlagen"},
+  {key: "lab", label: "Laborbetrieb"},
+];
+navCategories.forEach(cat => {
+  const matching = cards.filter(c => c.dataset.category === cat.key);
+  if (!matching.length) return;
+  const head = document.createElement("div");
+  head.className = "tab-cat";
+  head.textContent = cat.label;
+  tabNav.append(head);
+  matching.forEach(card => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.dataset.card = card.id;
+    btn.textContent = card.querySelector(".card-head h2").textContent;
+    btn.addEventListener("click", () => openCard(card.id));
+    tabNav.append(btn);
+  });
 });
 if (cards.length) showCard(cards[0].id);
 document.body.dataset.view = "home";
@@ -631,11 +644,11 @@ function blockRow(ctx, c, blocks, W, y) {
     ctx.fillStyle = c.bg; ctx.strokeStyle = c.dim; ctx.lineWidth = 1.4;
     ctx.fillRect(x, y, bw, bh); ctx.strokeRect(x, y, bw, bh);
     ctx.textAlign = "center";
-    ctx.fillStyle = c.dim; ctx.font = "10px monospace";
-    ctx.fillText(b.t, x + bw / 2, y + 17);
+    ctx.fillStyle = c.dim; ctx.font = "12px monospace";
+    ctx.fillText(b.t, x + bw / 2, y + 16);
     if (b.v) {
-      ctx.fillStyle = c.accent; ctx.font = "11px monospace";
-      ctx.fillText(b.v, x + bw / 2, y + 31);
+      ctx.fillStyle = c.accent; ctx.font = "12px monospace";
+      ctx.fillText(b.v, x + bw / 2, y + 32);
     }
     if (i < n - 1) {
       const ax = x + bw, ax2 = ax + gap;
@@ -744,25 +757,25 @@ function drawChain(panel, result) {
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillStyle = c.dim; ctx.font = "12px monospace"; ctx.textAlign = "left";
   ctx.fillText(result.result_label.toUpperCase(), 16, 24);
-  ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
-  ctx.fillText(result.result + " " + result.result_unit, 16, 50);
-  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
-  ctx.fillText("(" + result.result_linear + " " + result.result_linear_unit + ")", 16, 70);
+  ctx.fillStyle = c.accent; ctx.font = "600 26px monospace";
+  ctx.fillText(result.result + " " + result.result_unit, 16, 51);
+  ctx.fillStyle = c.faint; ctx.font = "12px monospace";
+  ctx.fillText("(" + result.result_linear + " " + result.result_linear_unit + ")", 16, 71);
 
   const first = result.mode === "radiated" ? "Antenne" : "LISN";
   blockRow(ctx, c, [
     {t: first, v: "+" + result.factor},
     {t: "Kabel", v: "+" + result.cable},
-    {t: "Vorverst.", v: "−" + result.preamp},
-    {t: "Dämpfung", v: "+" + result.atten},
-    {t: "Empfänger", v: result.v_rx + ""},
+    {t: "Vorv.", v: "−" + result.preamp},
+    {t: "Dämpf.", v: "+" + result.atten},
+    {t: "Empf.", v: result.v_rx + ""},
   ], W, 110);
 
-  ctx.fillStyle = c.faint; ctx.font = "10px monospace"; ctx.textAlign = "left";
-  ctx.fillText("EUT ▸", 16, 102);
-  ctx.fillText("dB-Beiträge unter den Blöcken", 16, 174);
+  ctx.fillStyle = c.faint; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillText("EUT ▸", 16, 100);
+  ctx.fillText("dB-Beiträge unter den Blöcken", 16, 176);
 
   setReadout(canvas, `${result.result_label} = Empfänger + Faktor + Kabel + Dämpfung − Vorverstärker = ${result.result} ${result.result_unit}`);
 }
@@ -774,15 +787,15 @@ function drawRI(panel, result) {
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillStyle = c.dim; ctx.font = "12px monospace"; ctx.textAlign = "left";
   ctx.fillText("BENÖTIGTE VERSTÄRKERLEISTUNG", 16, 24);
-  ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
-  ctx.fillText(result.p_amp_w + " W", 16, 50);
-  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
-  ctx.fillText("= " + result.p_amp_dbm + " dBm  ·  netto " + result.p_net_w + " W an der Antenne", 16, 70);
+  ctx.fillStyle = c.accent; ctx.font = "600 26px monospace";
+  ctx.fillText(result.p_amp_w + " W", 16, 51);
+  ctx.fillStyle = c.faint; ctx.font = "12px monospace";
+  ctx.fillText("= " + result.p_amp_dbm + " dBm  ·  netto " + result.p_net_w + " W", 16, 71);
 
   blockRow(ctx, c, [
-    {t: "Verstärker", v: result.p_amp_dbm + " dBm"},
+    {t: "Verst.", v: result.p_amp_dbm + " dBm"},
     {t: "Kabel", v: "−" + result.cable + " dB"},
     {t: "Antenne", v: result.gain + " dBi"},
     {t: "E-Feld", v: result.e_target + " V/m"},
@@ -799,17 +812,17 @@ function drawBCI(panel, result) {
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillStyle = c.dim; ctx.font = "12px monospace"; ctx.textAlign = "left";
   ctx.fillText("BENÖTIGTE VORLAUFLEISTUNG", 16, 24);
-  ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
-  ctx.fillText(result.power_w + " W", 16, 50);
-  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
-  ctx.fillText("= " + result.power_dbm + " dBm  ·  " + result.current_dbua + " dBµA  ·  Monitor " + result.monitor_dbuv + " dBµV", 16, 70);
+  ctx.fillStyle = c.accent; ctx.font = "600 26px monospace";
+  ctx.fillText(result.power_w + " W", 16, 51);
+  ctx.fillStyle = c.faint; ctx.font = "12px monospace";
+  ctx.fillText("= " + result.power_dbm + " dBm  ·  " + result.current_dbua + " dBµA", 16, 71);
 
   blockRow(ctx, c, [
-    {t: "Verstärker", v: result.power_dbm + " dBm"},
-    {t: "Injekt.-Zange", v: result.current_ma + " mA"},
-    {t: "Kabelbaum", v: result.r + " Ω"},
+    {t: "Verst.", v: result.power_dbm + " dBm"},
+    {t: "Zange", v: result.current_ma + " mA"},
+    {t: "Kabel", v: result.r + " Ω"},
     {t: "EUT", v: ""},
   ], W, 108);
 
