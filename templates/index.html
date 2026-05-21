@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=9">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=10">
 <script>
   (function () {
     try {
@@ -38,78 +38,10 @@
 
 <main id="main">
 
-<!-- ====== Microstrip ====== -->
-<section id="microstrip" class="card">
-  <div class="card-head">
-    <span class="tag">01</span>
-    <h2>Mikrostreifen-Charakteristik</h2>
-    <p>Hammerstad–Jensen-Gleichung mit Leitungsdickenkorrektur für PCB-Übertragungsleitungen.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="microstrip">
-      <label>Spurbreite <span>W</span>
-        <input name="w" type="number" step="0.001" value="0.4" required>
-        <em>mm</em>
-      </label>
-      <label>Dielektrikumhöhe <span>H</span>
-        <input name="h" type="number" step="0.001" value="0.2" required>
-        <em>mm</em>
-      </label>
-      <label>Kupferdicke <span>T</span>
-        <input name="t" type="number" step="0.001" value="0.035" required>
-        <em>mm</em>
-      </label>
-      <label>Permittivität <span>εᵣ</span>
-        <input name="er" type="number" step="0.01" value="4.3" required>
-        <em></em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="microstrip">
-      <div class="r-main"><span class="label">Z₀</span><span class="value">—</span><span class="unit">Ω</span></div>
-      <div class="r-grid">
-        <div><span class="label">ε_eff</span><span class="value" data-key="er_eff">—</span></div>
-        <div><span class="label">vₚ / c</span><span class="value" data-key="vp_fraction">—</span></div>
-        <div><span class="label">Laufzeit</span><span class="value" data-key="delay">—</span><em>ps/mm</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Near / Far Field ====== -->
-<section id="nearfield" class="card">
-  <div class="card-head">
-    <span class="tag">02</span>
-    <h2>Nahfeld / Fernfeld</h2>
-    <p>Bestimmt lokale Felder: reaktives Nahfeld, Strahlungsnahfeld und Fraunhofer-Fernfeld.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="nearfield">
-      <label>Frequenz
-        <input name="freq" type="number" step="0.01" value="100" required>
-        <em>MHz</em>
-      </label>
-      <label>Apertur / Antennenbreite <span>D (optional)</span>
-        <input name="d" type="number" step="0.001" value="">
-        <em>m</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="nearfield">
-      <div class="r-main"><span class="label">λ</span><span class="value" data-key="wavelength_m">—</span><span class="unit">m</span></div>
-      <div class="r-grid">
-        <div><span class="label">Reaktive Grenze</span><span class="value" data-key="reactive_m">—</span><em>m</em></div>
-        <div><span class="label">Fernfeld (klein)</span><span class="value" data-key="far_small_m">—</span><em>m</em></div>
-        <div><span class="label">Fernfeld (Apertur)</span><span class="value" data-key="far_large_m">—</span><em>m</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== Shielding Effectiveness ====== -->
 <section id="shielding" class="card">
   <div class="card-head">
-    <span class="tag">03</span>
+    <span class="tag">01</span>
     <h2>Abschirmwirkung</h2>
     <p>Schelkunoff-Modell: Absorption + Reflexion + Mehrfachreflexion für ebene Wellen.</p>
   </div>
@@ -148,7 +80,7 @@
 <!-- ====== Magnetic Field Units ====== -->
 <section id="magfield" class="card">
   <div class="card-head">
-    <span class="tag">04</span>
+    <span class="tag">02</span>
     <h2>Magnetfeld-Einheiten</h2>
     <p>Wandelt zwischen Flussdichte (T, Gauss, dBpT) und Feldstärke (A/m, Oe, dBµA/m) um — Annahme Luft, B = µ₀·H.</p>
   </div>
@@ -176,7 +108,7 @@
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="magfield">
-      <div class="r-main"><span class="label">µT</span><span class="value">—</span></div>
+      <div class="r-main"><span class="label">µT</span><span class="value" data-key="microtesla">—</span></div>
       <div class="r-grid">
         <div><span class="label">Flussdichte</span><span class="value" data-key="tesla">—</span><em>T</em></div>
         <div><span class="label">Gauss</span><span class="value" data-key="gauss">—</span><em>G</em></div>
@@ -192,7 +124,7 @@
 <!-- ====== Skin Depth ====== -->
 <section id="skindepth" class="card">
   <div class="card-head">
-    <span class="tag">05</span>
+    <span class="tag">03</span>
     <h2>Hauttiefe (Skin-Effekt)</h2>
     <p>Berechnet Eindringtiefe und Oberflächenwiderstand eines Leiters bei hoher Frequenz.</p>
   </div>
@@ -225,7 +157,7 @@
 <!-- ====== Rise Time / Bandwidth ====== -->
 <section id="risetime" class="card">
   <div class="card-head">
-    <span class="tag">06</span>
+    <span class="tag">04</span>
     <h2>Anstiegszeit / Bandbreite</h2>
     <p>Verknüpft Signalanstiegszeit, 3-dB-Bandbreite und Knickfrequenz für EMV-Abschätzungen.</p>
   </div>
@@ -255,7 +187,7 @@
 <!-- ====== Field Strength / Power Density ====== -->
 <section id="fieldstrength" class="card">
   <div class="card-head">
-    <span class="tag">07</span>
+    <span class="tag">05</span>
     <h2>Feldstärke / Leistungsdichte</h2>
     <p>Berechnet die Fernfeld-Feldstärke und Leistungsdichte eines Strahlers in gegebenem Abstand.</p>
   </div>
@@ -287,69 +219,67 @@
   </div>
 </section>
 
-<!-- ====== dB Converter (unified) ====== -->
+<!-- ====== dB Unit Converter ====== -->
 <section id="db" class="card">
   <div class="card-head">
-    <span class="tag">08</span>
-    <h2>dB-Konverter</h2>
-    <p>Verhältnis ⇄ dB sowie Pegel-Einheiten (dBµV, dBµA, dBm) und ihre Linearwerte in einem Rechner.</p>
+    <span class="tag">06</span>
+    <h2>dB-Einheiten-Konverter</h2>
+    <p>Rechnet einen Pegel in alle gängigen dB- und Linearwerte für Spannung, Strom und Leistung um — an einer Bezugsimpedanz.</p>
   </div>
   <div class="card-body">
     <form class="inputs" data-form="db">
-      <label>Konversionstyp
-        <select name="mode" data-db-mode>
-          <option value="ratio">Verhältnis ⇄ dB</option>
-          <option value="level">Pegel-Einheiten</option>
-        </select>
-        <em></em>
-      </label>
       <label>Wert
-        <input name="value" type="number" step="any" value="3" required>
+        <input name="value" type="number" step="any" value="60" required>
         <em></em>
       </label>
-      <label data-db-fields="ratio">Größe
-        <select name="kind">
-          <option value="power">Leistung</option>
-          <option value="voltage">Spannung / Strom</option>
-        </select>
-        <em></em>
-      </label>
-      <label data-db-fields="ratio">Richtung
-        <select name="direction">
-          <option value="db_to_ratio">dB → Verhältnis</option>
-          <option value="ratio_to_db">Verhältnis → dB</option>
-        </select>
-        <em></em>
-      </label>
-      <label data-db-fields="level">Eingangseinheit
+      <label>Eingangseinheit
         <select name="unit">
-          <option value="dbuv">dBµV</option>
-          <option value="dbua">dBµA</option>
-          <option value="dbm">dBm</option>
-          <option value="uv">µV (linear)</option>
-          <option value="ua">µA (linear)</option>
-          <option value="mw">mW (linear)</option>
+          <optgroup label="Spannung">
+            <option value="dbuv">dBµV</option>
+            <option value="dbmv">dBmV</option>
+            <option value="dbv">dBV</option>
+            <option value="uv">µV</option>
+            <option value="mv">mV</option>
+            <option value="v">V</option>
+          </optgroup>
+          <optgroup label="Strom">
+            <option value="dbua">dBµA</option>
+            <option value="dbma">dBmA</option>
+            <option value="ua">µA</option>
+            <option value="ma">mA</option>
+            <option value="a">A</option>
+          </optgroup>
+          <optgroup label="Leistung">
+            <option value="dbm">dBm</option>
+            <option value="dbw">dBW</option>
+            <option value="mw">mW</option>
+            <option value="w">W</option>
+          </optgroup>
         </select>
         <em></em>
       </label>
-      <label data-db-fields="level">Bezugsimpedanz <span>Z</span>
+      <label>Bezugsimpedanz <span>Z</span>
         <input name="z" type="number" step="0.1" value="50">
         <em>Ω</em>
       </label>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="db">
-      <div class="r-main"><span class="label">Ergebnis</span><span class="value">—</span></div>
+      <div class="r-main"><span class="label">dBµV</span><span class="value" data-key="dbuv">—</span></div>
       <div class="r-grid">
-        <div data-db-fields="ratio"><span class="label">dB</span><span class="value" data-key="db">—</span><em>dB</em></div>
-        <div data-db-fields="ratio"><span class="label">Verhältnis</span><span class="value" data-key="ratio">—</span></div>
-        <div data-db-fields="level"><span class="label">dBµV</span><span class="value" data-key="dbuv">—</span><em>dBµV</em></div>
-        <div data-db-fields="level"><span class="label">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
-        <div data-db-fields="level"><span class="label">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
-        <div data-db-fields="level"><span class="label">Spannung</span><span class="value" data-key="uv">—</span><em>µV</em></div>
-        <div data-db-fields="level"><span class="label">Strom</span><span class="value" data-key="ua">—</span><em>µA</em></div>
-        <div data-db-fields="level"><span class="label">Leistung</span><span class="value" data-key="mw">—</span><em>mW</em></div>
-        <div data-db-fields="level"><span class="label">Impedanz</span><span class="value" data-key="impedance">—</span><em>Ω</em></div>
+        <div><span class="label">dBmV</span><span class="value" data-key="dbmv">—</span><em>dBmV</em></div>
+        <div><span class="label">dBV</span><span class="value" data-key="dbv">—</span><em>dBV</em></div>
+        <div><span class="label">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
+        <div><span class="label">dBmA</span><span class="value" data-key="dbma">—</span><em>dBmA</em></div>
+        <div><span class="label">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
+        <div><span class="label">dBW</span><span class="value" data-key="dbw">—</span><em>dBW</em></div>
+        <div><span class="label">Spannung</span><span class="value" data-key="v">—</span><em>V</em></div>
+        <div><span class="label">Spannung</span><span class="value" data-key="uv">—</span><em>µV</em></div>
+        <div><span class="label">Strom</span><span class="value" data-key="a">—</span><em>A</em></div>
+        <div><span class="label">Strom</span><span class="value" data-key="ua">—</span><em>µA</em></div>
+        <div><span class="label">Leistung</span><span class="value" data-key="w">—</span><em>W</em></div>
+        <div><span class="label">Leistung</span><span class="value" data-key="mw">—</span><em>mW</em></div>
+        <div><span class="label">Impedanz</span><span class="value" data-key="impedance">—</span><em>Ω</em></div>
       </div>
     </div>
   </div>
@@ -358,7 +288,7 @@
 <!-- ====== VSWR / Return Loss ====== -->
 <section id="vswr" class="card">
   <div class="card-head">
-    <span class="tag">09</span>
+    <span class="tag">07</span>
     <h2>VSWR / Rückflussdämpfung</h2>
     <p>Berechnet aus VSWR oder Return Loss die jeweils andere Kennzahl.</p>
   </div>
@@ -390,7 +320,7 @@
 <!-- ====== Frequency / Wavelength ====== -->
 <section id="wavelength" class="card">
   <div class="card-head">
-    <span class="tag">10</span>
+    <span class="tag">08</span>
     <h2>Frequenz / Wellenlänge</h2>
     <p>Wandelt zwischen MHz und Meter um für HF-Planung und Antennendesign.</p>
   </div>
@@ -417,156 +347,10 @@
   </div>
 </section>
 
-<!-- ====== Coaxial Impedance ====== -->
-<section id="coax" class="card">
-  <div class="card-head">
-    <span class="tag">11</span>
-    <h2>Koaxiale Impedanz</h2>
-    <p>Berechnet die charakteristische Impedanz eines Koaxialkabels aus D, d und εᵣ.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="coax">
-      <label>Außendurchmesser <span>D</span>
-        <input name="D" type="number" step="0.001" value="7.5" required>
-        <em>mm</em>
-      </label>
-      <label>Innendurchmesser <span>d</span>
-        <input name="d" type="number" step="0.001" value="2.95" required>
-        <em>mm</em>
-      </label>
-      <label>Permittivität <span>εᵣ</span>
-        <input name="er" type="number" step="0.01" value="2.25" required>
-        <em></em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="coax">
-      <div class="r-main"><span class="label">Z₀</span><span class="value" data-key="z0">—</span><span class="unit">Ω</span></div>
-      <div class="r-grid">
-        <div><span class="label">εᵣ</span><span class="value" data-key="er">—</span></div>
-        <div><span class="label">vₚ / c</span><span class="value" data-key="vp_fraction">—</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Quarter-Wave Transformer ====== -->
-<section id="quarter" class="card">
-  <div class="card-head">
-    <span class="tag">12</span>
-    <h2>Viertelwellen-Transformator</h2>
-    <p>Berechnet die erforderliche Transformatorimpedanz für eine verlustfreie Anpassung.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="quarter">
-      <label>Quellimpedanz
-        <input name="zs" type="number" step="0.1" value="50" required>
-        <em>Ω</em>
-      </label>
-      <label>Lastimpedanz
-        <input name="zl" type="number" step="0.1" value="75" required>
-        <em>Ω</em>
-      </label>
-      <label>Frequenz <span>(optional)</span>
-        <input name="freq" type="number" step="0.01" value="100">
-        <em>MHz</em>
-      </label>
-      <label>Geschwindigkeitsfaktor <span>vf</span>
-        <input name="vf" type="number" step="0.001" value="1">
-        <em></em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="quarter">
-      <div class="r-main"><span class="label">Z₀, Transformer</span><span class="value" data-key="z0">—</span><span class="unit">Ω</span></div>
-      <div class="r-grid">
-        <div><span class="label">Frequenz</span><span class="value" data-key="frequency_mhz">—</span><em>MHz</em></div>
-        <div><span class="label">vf</span><span class="value" data-key="velocity_factor">—</span></div>
-        <div><span class="label">Länge λ/4</span><span class="value" data-key="length_m">—</span><em>m</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Attenuation ====== -->
-<section id="attenuation" class="card">
-  <div class="card-head">
-    <span class="tag">13</span>
-    <h2>Dämpfung</h2>
-    <p>Rechnet Kabeldämpfung (dB/m) über eine bestimmte Länge in Nettoverlust um.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="attenuation">
-      <label>Dämpfung
-        <input name="alpha" type="number" step="0.01" value="0.5" required>
-        <em>dB/m</em>
-      </label>
-      <label>Länge
-        <input name="length" type="number" step="0.01" value="10" required>
-        <em>m</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="attenuation">
-      <div class="r-main"><span class="label">Gesamtverlust</span><span class="value" data-key="total_db">—</span><span class="unit">dB</span></div>
-      <div class="r-grid">
-        <div><span class="label">Leistungsverhältnis</span><span class="value" data-key="power_ratio">—</span></div>
-        <div><span class="label">Spannungsverhältnis</span><span class="value" data-key="voltage_ratio">—</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Coaxial Loss Model ====== -->
-<section id="coaxloss" class="card">
-  <div class="card-head">
-    <span class="tag">14</span>
-    <h2>Koax-Verlustmodell</h2>
-    <p>Berechnet die Dämpfung eines Koaxialkabels aus Geometrie, Frequenz und Materialparametern.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="coaxloss">
-      <label>Frequenz
-        <input name="freq" type="number" step="0.01" value="100" required>
-        <em>MHz</em>
-      </label>
-      <label>Außendurchmesser <span>D</span>
-        <input name="D" type="number" step="0.001" value="7.5" required>
-        <em>mm</em>
-      </label>
-      <label>Innendurchmesser <span>d</span>
-        <input name="d" type="number" step="0.001" value="2.95" required>
-        <em>mm</em>
-      </label>
-      <label>Permittivität <span>εᵣ</span>
-        <input name="er" type="number" step="0.01" value="2.25" required>
-        <em></em>
-      </label>
-      <label>Verlustfaktor <span>tanδ</span>
-        <input name="tan_delta" type="number" step="0.0001" value="0.0005" required>
-        <em></em>
-      </label>
-      <label>Leitfähigkeit
-        <input name="sigma" type="number" step="1" value="58000000" required>
-        <em>S/m</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="coaxloss">
-      <div class="r-main"><span class="label">Z₀</span><span class="value" data-key="z0">—</span><span class="unit">Ω</span></div>
-      <div class="r-grid">
-        <div><span class="label">Leiterverlust</span><span class="value" data-key="alpha_conductor">—</span><em>dB/m</em></div>
-        <div><span class="label">Dielektrikverlust</span><span class="value" data-key="alpha_dielectric">—</span><em>dB/m</em></div>
-        <div><span class="label">Gesamtverlust</span><span class="value" data-key="alpha_total">—</span><em>dB/m</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== PCB Impedance ====== -->
 <section id="pcb" class="card">
   <div class="card-head">
-    <span class="tag">15</span>
+    <span class="tag">09</span>
     <h2>PCB-Impedanz</h2>
     <p>Berechnet Single-Ended- und differentielle Impedanz einer Mikrostreifenleitung.</p>
   </div>
@@ -608,7 +392,7 @@
 <!-- ====== LC Resonant Frequency ====== -->
 <section id="lcres" class="card">
   <div class="card-head">
-    <span class="tag">16</span>
+    <span class="tag">10</span>
     <h2>LC-Resonanzfrequenz</h2>
     <p>Berechnet die Resonanzfrequenz, z.B. die Eigenresonanz eines Abblockkondensators.</p>
   </div>
@@ -638,7 +422,7 @@
 <!-- ====== HF Bands / Antenne ====== -->
 <section id="hfband" class="card">
   <div class="card-head">
-    <span class="tag">17</span>
+    <span class="tag">11</span>
     <h2>HF-Bänder & Antenne</h2>
     <p>Bestimmt HF-Band, λ/4 und λ/2 für eine eingegebene Frequenz.</p>
   </div>
@@ -662,97 +446,10 @@
   </div>
 </section>
 
-<!-- ====== Electrical Length ====== -->
-<section id="electrical" class="card">
-  <div class="card-head">
-    <span class="tag">18</span>
-    <h2>Elektrische Leitungslänge</h2>
-    <p>Berechnet die physikalische Länge für eine gewünschte elektrische Phasenverschiebung oder umgekehrt.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="electrical">
-      <label>Frequenz
-        <input name="freq" type="number" step="0.01" value="14" required>
-        <em>MHz</em>
-      </label>
-      <label>Geschwindigkeitsfaktor
-        <input name="vf" type="number" step="0.001" value="0.7" required>
-        <em></em>
-      </label>
-      <label>Elektrische Länge
-        <input name="degrees" type="number" step="0.1" value="90">
-        <em>Grad</em>
-      </label>
-      <label>Physikalische Länge
-        <input name="length_mm" type="number" step="0.1" value="">
-        <em>mm</em>
-      </label>
-      <p class="hint-line">Geben Sie entweder Grad oder Länge ein. Das jeweils andere Ergebnis wird berechnet.</p>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="electrical">
-      <div class="r-main"><span class="label">Ergebnis</span><span class="value">—</span></div>
-      <div class="r-grid">
-        <div><span class="label">Frequenz</span><span class="value" data-key="frequency_mhz">—</span><em>MHz</em></div>
-        <div><span class="label">Geschwindigkeitsfaktor</span><span class="value" data-key="velocity_factor">—</span></div>
-        <div><span class="label">Wellenlänge</span><span class="value" data-key="wavelength_m">—</span><em>m</em></div>
-        <div><span class="label">Länge</span><span class="value" data-key="length_mm">—</span><em>mm</em></div>
-        <div><span class="label">Elektrische Länge</span><span class="value" data-key="degrees">—</span><em>°</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Loss vs Frequency (graph) ====== -->
-<section id="sweep" class="card">
-  <div class="card-head">
-    <span class="tag">19</span>
-    <h2>Dämpfung über Frequenz</h2>
-    <p>Zeichnet Leiter-, Dielektrik- und Gesamtdämpfung eines Koaxialkabels über einen Frequenzbereich.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-graph="sweep">
-      <label>Start-Frequenz
-        <input name="f_start" type="number" step="0.1" value="1" required>
-        <em>MHz</em>
-      </label>
-      <label>Stopp-Frequenz
-        <input name="f_stop" type="number" step="0.1" value="10000" required>
-        <em>MHz</em>
-      </label>
-      <label>Außendurchmesser <span>D</span>
-        <input name="D" type="number" step="0.001" value="7.5" required>
-        <em>mm</em>
-      </label>
-      <label>Innendurchmesser <span>d</span>
-        <input name="d" type="number" step="0.001" value="2.95" required>
-        <em>mm</em>
-      </label>
-      <label>Permittivität <span>εᵣ</span>
-        <input name="er" type="number" step="0.01" value="2.25" required>
-        <em></em>
-      </label>
-      <label>Verlustfaktor <span>tanδ</span>
-        <input name="tan_delta" type="number" step="0.0001" value="0.0005" required>
-        <em></em>
-      </label>
-      <label>Leitfähigkeit
-        <input name="sigma" type="number" step="1" value="58000000" required>
-        <em>S/m</em>
-      </label>
-      <button type="submit">Zeichnen</button>
-    </form>
-    <div class="graph-panel" data-graph-panel="sweep">
-      <canvas width="520" height="340"></canvas>
-      <div class="graph-readout">—</div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== Smith Chart (graph) ====== -->
 <section id="smith" class="card">
   <div class="card-head">
-    <span class="tag">20</span>
+    <span class="tag">12</span>
     <h2>Smith-Diagramm</h2>
     <p>Stellt eine Lastimpedanz im Smith-Diagramm dar, mit Reflexionsfaktor und VSWR-Kreis.</p>
   </div>
@@ -782,7 +479,7 @@
 <!-- ====== Antenna Pattern (graph) ====== -->
 <section id="pattern" class="card">
   <div class="card-head">
-    <span class="tag">21</span>
+    <span class="tag">13</span>
     <h2>Antennen-Strahlungsdiagramm</h2>
     <p>Polardiagramm der Strahlungscharakteristik eines mittengespeisten Dipols.</p>
   </div>
@@ -885,18 +582,6 @@ themeToggle.addEventListener("click", () => {
   document.querySelectorAll("form[data-graph]").forEach(f => f.requestSubmit());
 });
 
-/* ===== dB converter: show fields for the selected mode ===== */
-document.querySelectorAll("[data-db-mode]").forEach(sel => {
-  const card = sel.closest(".card");
-  const sync = () => {
-    card.querySelectorAll("[data-db-fields]").forEach(el => {
-      el.classList.toggle("hidden", el.dataset.dbFields !== sel.value);
-    });
-  };
-  sel.addEventListener("change", sync);
-  sync();
-});
-
 /* ===== Form submission ===== */
 document.querySelectorAll("form[data-form]").forEach(form => {
   form.addEventListener("submit", async e => {
@@ -913,9 +598,7 @@ document.querySelectorAll("form[data-form]").forEach(form => {
         showError(panel, result.error);
       } else {
         clearError(panel);
-        const mainKey = name === "electrical"
-          ? (data.degrees ? "length_mm" : "degrees")
-          : Object.keys(result)[0];
+        const mainKey = Object.keys(result)[0];
         const mainEl = panel.querySelector(".r-main .value");
         mainEl.textContent = result[mainKey] ?? "—";
         panel.querySelectorAll("[data-key]").forEach(el => {
@@ -949,57 +632,6 @@ function themeColors() {
     warn: s.getPropertyValue("--warn").trim(),
     bg: s.getPropertyValue("--bg-input").trim(),
   };
-}
-
-function drawSweep(canvas, result) {
-  const ctx = canvas.getContext("2d");
-  const c = themeColors();
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-  const pad = {l: 54, r: 14, t: 22, b: 38};
-  const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
-  const pts = result.points;
-  const lx0 = Math.log10(pts[0].f), lx1 = Math.log10(pts[pts.length - 1].f);
-  let ymax = 0;
-  pts.forEach(p => { ymax = Math.max(ymax, p.total); });
-  ymax = ymax * 1.1 || 1;
-  const X = f => pad.l + (Math.log10(f) - lx0) / (lx1 - lx0) * pw;
-  const Y = v => pad.t + ph - v / ymax * ph;
-
-  ctx.strokeStyle = c.grid; ctx.fillStyle = c.dim;
-  ctx.font = "10px monospace"; ctx.lineWidth = 1;
-  for (let d = Math.ceil(lx0); d <= Math.floor(lx1); d++) {
-    const dv = Math.pow(10, d), x = X(dv);
-    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
-    ctx.textAlign = "center";
-    ctx.fillText(dv >= 1000 ? (dv / 1000) + "G" : dv + "M", x, H - 22);
-  }
-  for (let i = 0; i <= 4; i++) {
-    const v = ymax * i / 4, y = Y(v);
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke();
-    ctx.textAlign = "right"; ctx.fillText(v.toFixed(2), pad.l - 6, y + 3);
-  }
-  ctx.textAlign = "center";
-  ctx.fillText("Frequenz", pad.l + pw / 2, H - 6);
-
-  const line = (key, color, wd) => {
-    ctx.strokeStyle = color; ctx.lineWidth = wd; ctx.beginPath();
-    pts.forEach((p, i) => {
-      const x = X(p.f), y = Y(p[key]);
-      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-    });
-    ctx.stroke();
-  };
-  line("cond", c.dim, 1.5);
-  line("diel", c.faint, 1.5);
-  line("total", c.accent, 2);
-
-  ctx.textAlign = "left";
-  [["Gesamt", c.accent], ["Leiter", c.dim], ["Dielektr.", c.faint]].forEach((L, i) => {
-    ctx.fillStyle = L[1]; ctx.fillRect(pad.l + 6 + i * 96, pad.t - 12, 12, 3);
-    ctx.fillStyle = c.dim; ctx.fillText(L[0], pad.l + 22 + i * 96, pad.t - 8);
-  });
-  setReadout(canvas, `Z₀ ≈ ${result.z0} Ω · Dämpfung in dB/m`);
 }
 
 function drawSmith(canvas, result) {
@@ -1076,7 +708,7 @@ function drawPattern(canvas, result) {
     : "Keine ausgeprägte Hauptkeule");
 }
 
-const graphDrawers = {sweep: drawSweep, smith: drawSmith, pattern: drawPattern};
+const graphDrawers = {smith: drawSmith, pattern: drawPattern};
 
 document.querySelectorAll("form[data-graph]").forEach(form => {
   form.addEventListener("submit", async e => {

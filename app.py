@@ -70,71 +70,6 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/api/microstrip", methods=["POST"])
-def api_microstrip():
-    """
-    Characteristic impedance of a microstrip line (Hammerstad-Jensen, simplified).
-    Inputs: w (mm), h (mm), t (mm), er (dielectric constant)
-    """
-    try:
-        data = request.get_json()
-        w = float(data["w"])
-        h = float(data["h"])
-        t = float(data["t"])
-        er = float(data["er"])
-
-        if w <= 0 or h <= 0 or er <= 0:
-            return jsonify({"error": "Breite, Höhe und εᵣ müssen positiv sein."}), 400
-
-        z0, er_eff = microstrip_characteristic(w, h, t, er)
-        vp = C0 / math.sqrt(er_eff)
-        delay_ps_per_mm = 1e9 / vp  # ps/mm
-
-        return jsonify({
-            "z0": round(z0, 2),
-            "er_eff": round(er_eff, 3),
-            "vp_fraction": round(vp / C0, 3),
-            "delay": round(delay_ps_per_mm, 2),
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
-@app.route("/api/nearfield", methods=["POST"])
-def api_nearfield():
-    """
-    Near-field / far-field boundary.
-    Inputs: freq (MHz), optional D (m) for aperture/antenna size
-    """
-    try:
-        data = request.get_json()
-        freq_mhz = float(data["freq"])
-        d = float(data.get("d") or 0)
-
-        if freq_mhz <= 0:
-            return jsonify({"error": "Frequenz muss positiv sein."}), 400
-
-        freq_hz = freq_mhz * 1e6
-        wavelength = C0 / freq_hz  # m
-
-        # Reactive near-field boundary (lambda / 2*pi)
-        reactive = wavelength / (2 * math.pi)
-        # Radiating near-field outer / Fraunhofer (far-field) boundary
-        # For small radiators: 3 * lambda. For larger apertures: 2*D^2/lambda
-        far_small = 3 * wavelength
-        far_large = (2 * d**2 / wavelength) if d > 0 else None
-
-        return jsonify({
-            "wavelength_m": round(wavelength, 4),
-            "wavelength_mm": round(wavelength * 1000, 2),
-            "reactive_m": round(reactive, 4),
-            "far_small_m": round(far_small, 4),
-            "far_large_m": round(far_large, 4) if far_large is not None else None,
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
 @app.route("/api/shielding", methods=["POST"])
 def api_shielding():
     """
@@ -165,7 +100,6 @@ def api_shielding():
         A = 8.686 * t_m / skin
 
         # Reflection loss for plane wave (dB)
-        # R ≈ 168 - 10*log10(mu_r * f / sigma_r)  [approx, far-field plane wave]
         R = 168 - 10 * math.log10(mu_r * freq_hz / sigma_r)
 
         # Multiple reflection correction (negligible if A > 10 dB)
@@ -190,72 +124,72 @@ def api_shielding():
 @app.route("/api/db", methods=["POST"])
 def api_db():
     """
-    dB-Konverter mit zwei Modi:
-      mode="ratio" — Verhältnis <-> dB (Leistung oder Spannung).
-      mode="level" — Pegel-Einheiten dBµV/dBµA/dBm und Linearwerte µV/µA/mW
-                     an einer Bezugsimpedanz.
+    dB-Einheiten-Konverter: rechnet einen Pegel in alle dB- und Linearwerte
+    für Spannung, Strom und Leistung um.
+    Eingaben: value, unit, z (Bezugsimpedanz in Ohm).
     """
     try:
         data = request.get_json()
-        mode = data.get("mode", "ratio")
         value = float(data["value"])
+        unit = data.get("unit", "dbuv")
+        z = float(data.get("z") or 50)
 
-        if mode == "ratio":
-            kind = data.get("kind", "power")
-            direction = data.get("direction", "db_to_ratio")
-            factor = 20 if kind == "voltage" else 10
+        if z <= 0:
+            return jsonify({"error": "Bezugsimpedanz muss positiv sein."}), 400
 
-            if direction == "db_to_ratio":
-                return jsonify({
-                    "ratio": round(10 ** (value / factor), 6),
-                    "db": round(value, 4),
-                })
-            elif direction == "ratio_to_db":
-                if value <= 0:
-                    return jsonify({"error": "Verhältnis muss positiv sein."}), 400
-                return jsonify({
-                    "db": round(factor * math.log10(value), 4),
-                    "ratio": round(value, 6),
-                })
-            return jsonify({"error": "Ungültige Richtung."}), 400
+        linear = {"uv", "mv", "v", "ua", "ma", "a", "mw", "w"}
+        if unit in linear and value <= 0:
+            return jsonify({"error": "Linearwerte müssen positiv sein."}), 400
 
-        if mode == "level":
-            unit = data.get("unit", "dbuv")
-            z = float(data.get("z") or 50)
+        volt_units = {"dbuv": 1e-6, "dbmv": 1e-3, "dbv": 1.0}
+        amp_units = {"dbua": 1e-6, "dbma": 1e-3}
+        lin_volt = {"uv": 1e-6, "mv": 1e-3, "v": 1.0}
+        lin_amp = {"ua": 1e-6, "ma": 1e-3, "a": 1.0}
 
-            if z <= 0:
-                return jsonify({"error": "Bezugsimpedanz muss positiv sein."}), 400
-            if unit in ("uv", "ua", "mw") and value <= 0:
-                return jsonify({"error": "Linearwerte müssen positiv sein."}), 400
+        if unit in volt_units:
+            volt = 10 ** (value / 20) * volt_units[unit]
+            p_w = volt * volt / z
+        elif unit in lin_volt:
+            volt = value * lin_volt[unit]
+            p_w = volt * volt / z
+        elif unit in amp_units:
+            amp = 10 ** (value / 20) * amp_units[unit]
+            p_w = amp * amp * z
+        elif unit in lin_amp:
+            amp = value * lin_amp[unit]
+            p_w = amp * amp * z
+        elif unit == "dbm":
+            p_w = 10 ** (value / 10) / 1000
+        elif unit == "dbw":
+            p_w = 10 ** (value / 10)
+        elif unit == "mw":
+            p_w = value / 1000
+        elif unit == "w":
+            p_w = value
+        else:
+            return jsonify({"error": "Ungültige Einheit."}), 400
 
-            if unit == "dbm":
-                p_w = 10 ** (value / 10) / 1000
-            elif unit == "mw":
-                p_w = value / 1000
-            elif unit == "dbuv":
-                p_w = (10 ** (value / 20) * 1e-6) ** 2 / z
-            elif unit == "uv":
-                p_w = (value * 1e-6) ** 2 / z
-            elif unit == "dbua":
-                p_w = (10 ** (value / 20) * 1e-6) ** 2 * z
-            elif unit == "ua":
-                p_w = (value * 1e-6) ** 2 * z
-            else:
-                return jsonify({"error": "Ungültige Einheit."}), 400
+        volt = math.sqrt(p_w * z)
+        amp = math.sqrt(p_w / z)
 
-            volt = math.sqrt(p_w * z)
-            amp = math.sqrt(p_w / z)
-            return jsonify({
-                "dbuv": round(20 * math.log10(volt / 1e-6), 2),
-                "dbua": round(20 * math.log10(amp / 1e-6), 2),
-                "dbm": round(10 * math.log10(p_w * 1000), 2),
-                "uv": round(volt / 1e-6, 4),
-                "ua": round(amp / 1e-6, 4),
-                "mw": round(p_w * 1000, 6),
-                "impedance": round(z, 2),
-            })
-
-        return jsonify({"error": "Ungültiger Modus."}), 400
+        return jsonify({
+            "dbuv": round(20 * math.log10(volt / 1e-6), 2),
+            "dbmv": round(20 * math.log10(volt / 1e-3), 2),
+            "dbv": round(20 * math.log10(volt), 2),
+            "dbua": round(20 * math.log10(amp / 1e-6), 2),
+            "dbma": round(20 * math.log10(amp / 1e-3), 2),
+            "dbm": round(10 * math.log10(p_w * 1000), 2),
+            "dbw": round(10 * math.log10(p_w), 2),
+            "uv": round(volt / 1e-6, 4),
+            "mv": round(volt / 1e-3, 6),
+            "v": round(volt, 9),
+            "ua": round(amp / 1e-6, 4),
+            "ma": round(amp / 1e-3, 6),
+            "a": round(amp, 9),
+            "mw": round(p_w * 1000, 6),
+            "w": round(p_w, 9),
+            "impedance": round(z, 2),
+        })
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
@@ -276,7 +210,6 @@ def api_magfield():
         if value <= 0:
             return jsonify({"error": "Feldwert muss positiv sein."}), 400
 
-        # Convert input to magnetic flux density B in tesla
         to_tesla = {
             "t": 1.0, "mt": 1e-3, "ut": 1e-6, "nt": 1e-9,
             "g": 1e-4, "mg": 1e-7, "oe": 1e-4,
@@ -377,177 +310,6 @@ def api_wavelength():
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 
-@app.route("/api/electrical", methods=["POST"])
-def api_electrical():
-    """
-    Electrical length calculator for RF lines.
-    Inputs: freq (MHz), vf, degrees or length_mm.
-    """
-    try:
-        data = request.get_json()
-        freq_mhz = float(data["freq"])
-        vf = float(data.get("vf") or 1)
-        degrees_raw = data.get("degrees")
-        length_mm_raw = data.get("length_mm")
-
-        if freq_mhz <= 0 or vf <= 0 or vf > 1:
-            return jsonify({"error": "Frequenz muss positiv sein und vf muss im Bereich 0..1 liegen."}), 400
-
-        wavelength = C0 / (freq_mhz * 1e6)
-        degrees = float(degrees_raw) if degrees_raw not in (None, "") else None
-        length_mm = float(length_mm_raw) if length_mm_raw not in (None, "") else None
-
-        if degrees is None and length_mm is None:
-            return jsonify({"error": "Bitte entweder Grad oder Länge eingeben."}), 400
-
-        if degrees is not None:
-            length_m = wavelength * vf * degrees / 360
-            length_mm = length_m * 1000
-        else:
-            length_m = length_mm / 1000
-            degrees = length_m / (wavelength * vf) * 360
-
-        return jsonify({
-            "frequency_mhz": round(freq_mhz, 4),
-            "velocity_factor": round(vf, 4),
-            "wavelength_m": round(wavelength, 4),
-            "length_m": round(length_m, 4),
-            "length_mm": round(length_mm, 2),
-            "degrees": round(degrees, 2),
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
-@app.route("/api/coax", methods=["POST"])
-def api_coax():
-    """
-    Koaxialkabel-Charakteristische Impedanz.
-    Eingaben: D (Außendurchmesser mm), d (Innendurchmesser mm), er.
-    """
-    try:
-        data = request.get_json()
-        D = float(data["D"])
-        d = float(data["d"])
-        er = float(data["er"])
-
-        if D <= 0 or d <= 0 or er <= 0 or D <= d:
-            return jsonify({"error": "D und d müssen positiv sein und D > d."}), 400
-
-        z0 = 60.0 / math.sqrt(er) * math.log(D / d)
-        vp = C0 / math.sqrt(er)
-
-        return jsonify({
-            "z0": round(z0, 2),
-            "er": round(er, 3),
-            "vp_fraction": round(vp / C0, 3),
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
-@app.route("/api/quarter", methods=["POST"])
-def api_quarter():
-    """
-    Viertelwellen-Transformator.
-    Eingaben: Zs, Zl, optional freq (MHz).
-    """
-    try:
-        data = request.get_json()
-        zs = float(data["zs"])
-        zl = float(data["zl"])
-        freq_mhz = float(data.get("freq") or 0)
-        vf = float(data.get("vf") or 1)
-
-        if zs <= 0 or zl <= 0:
-            return jsonify({"error": "Zs und Zl müssen positiv sein."}), 400
-        if vf <= 0 or vf > 1:
-            return jsonify({"error": "Geschwindigkeitsfaktor muss im Bereich 0..1 liegen."}), 400
-
-        z0 = math.sqrt(zs * zl)
-        length_m = None
-        if freq_mhz > 0:
-            wavelength = C0 / (freq_mhz * 1e6)
-            length_m = wavelength * vf / 4
-
-        return jsonify({
-            "z0": round(z0, 2),
-            "frequency_mhz": round(freq_mhz, 4) if freq_mhz > 0 else None,
-            "velocity_factor": round(vf, 4),
-            "length_m": round(length_m, 4) if length_m is not None else None,
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
-@app.route("/api/attenuation", methods=["POST"])
-def api_attenuation():
-    """
-    Dämpfungsrechner.
-    Eingaben: alpha (dB/m), Länge (m).
-    """
-    try:
-        data = request.get_json()
-        alpha = float(data["alpha"])
-        length = float(data["length"])
-
-        if alpha < 0 or length < 0:
-            return jsonify({"error": "Dämpfung und Länge müssen nicht-negativ sein."}), 400
-
-        total_db = alpha * length
-        power_ratio = 10 ** (-total_db / 10)
-        voltage_ratio = 10 ** (-total_db / 20)
-
-        return jsonify({
-            "total_db": round(total_db, 3),
-            "power_ratio": round(power_ratio, 6),
-            "voltage_ratio": round(voltage_ratio, 6),
-            "alpha": round(alpha, 3),
-            "length": round(length, 3),
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-@app.route("/api/coaxloss", methods=["POST"])
-def api_coaxloss():
-    """
-    Koaxialkabel-Dämpfungsmodell.
-    Eingaben: freq (MHz), D (mm), d (mm), er, tan_delta, sigma (S/m)
-    """
-    try:
-        data = request.get_json()
-        freq_mhz = float(data["freq"])
-        D = float(data["D"])
-        d = float(data["d"])
-        er = float(data["er"])
-        tan_delta = float(data.get("tan_delta") or 0)
-        sigma = float(data.get("sigma") or 5.8e7)
-
-        if freq_mhz <= 0 or D <= 0 or d <= 0 or er <= 0 or sigma <= 0 or D <= d:
-            return jsonify({"error": "Ungültige Eingabe, prüfen Sie Werte."}), 400
-
-        freq_hz = freq_mhz * 1e6
-        D_m = D / 1000
-        d_m = d / 1000
-        z0 = 60.0 / math.sqrt(er) * math.log(D_m / d_m)
-        rs = math.sqrt(math.pi * freq_hz * MU0 / sigma)
-        r_in = d_m / 2
-        r_out = D_m / 2
-        alpha_c = 8.686 * rs / (4 * math.pi * z0) * (1 / r_in + 1 / r_out)
-        alpha_d = 8.686 * math.pi * freq_hz * math.sqrt(MU0 * EPS0 * er) * tan_delta
-        alpha_total = alpha_c + alpha_d
-
-        return jsonify({
-            "z0": round(z0, 2),
-            "alpha_conductor": round(alpha_c, 4),
-            "alpha_dielectric": round(alpha_d, 4),
-            "alpha_total": round(alpha_total, 4),
-            "frequency_mhz": round(freq_mhz, 4),
-        })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
 @app.route("/api/pcb", methods=["POST"])
 def api_pcb():
     """
@@ -606,6 +368,7 @@ def api_hfband():
         })
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
 
 @app.route("/api/skindepth", methods=["POST"])
 def api_skindepth():
@@ -731,53 +494,6 @@ def api_fieldstrength():
             "power_density_mwcm2": round(power_density * 0.1, 6),
             "eirp_w": round(eirp, 4),
         })
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
-
-
-@app.route("/api/sweep", methods=["POST"])
-def api_sweep():
-    """
-    Koaxialkabel-Dämpfung über die Frequenz (log-skalierter Sweep).
-    Eingaben: f_start, f_stop (MHz), D, d (mm), er, tan_delta, sigma.
-    """
-    try:
-        data = request.get_json()
-        f_start = float(data["f_start"])
-        f_stop = float(data["f_stop"])
-        D = float(data["D"])
-        d = float(data["d"])
-        er = float(data["er"])
-        tan_delta = float(data.get("tan_delta") or 0)
-        sigma = float(data.get("sigma") or 5.8e7)
-
-        if f_start <= 0 or f_stop <= f_start or D <= d or d <= 0 or er <= 0 or sigma <= 0:
-            return jsonify({"error": "Ungültiger Frequenzbereich oder Geometrie."}), 400
-
-        D_m = D / 1000
-        d_m = d / 1000
-        z0 = 60.0 / math.sqrt(er) * math.log(D_m / d_m)
-        r_in = d_m / 2
-        r_out = D_m / 2
-
-        n = 60
-        step = (f_stop / f_start) ** (1 / (n - 1))
-        points = []
-        f = f_start
-        for _ in range(n):
-            f_hz = f * 1e6
-            rs = math.sqrt(math.pi * f_hz * MU0 / sigma)
-            ac = 8.686 * rs / (4 * math.pi * z0) * (1 / r_in + 1 / r_out)
-            ad = 8.686 * math.pi * f_hz * math.sqrt(MU0 * EPS0 * er) * tan_delta
-            points.append({
-                "f": round(f, 4),
-                "total": round(ac + ad, 5),
-                "cond": round(ac, 5),
-                "diel": round(ad, 5),
-            })
-            f *= step
-
-        return jsonify({"points": points, "z0": round(z0, 2)})
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
