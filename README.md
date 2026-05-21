@@ -5,25 +5,17 @@ Built with Flask. Designed to deploy on Render's free tier.
 
 ## Included calculators
 
-1. **Shielding Effectiveness** — Schelkunoff plane-wave model: absorption + reflection + multi-reflection correction, plus skin depth.
-2. **Magnetic Field Units** — converts between flux density (T, Gauss, dBpT) and field strength (A/m, Oersted, dBµA/m), assuming air (B = µ₀·H).
-3. **Skin Depth** — computes the skin-effect penetration depth and surface resistance of a conductor at high frequency.
-4. **Rise Time / Bandwidth** — relates signal rise time, 3 dB bandwidth and knee frequency for EMC estimates.
-5. **Field Strength / Power Density** — far-field E-field and power density of a radiator at a given distance.
-6. **dB Unit Converter** — converts a level into all common dB and linear units for voltage (dBµV, dBmV, dBV), current (dBµA, dBmA) and power (dBm, dBW), at a reference impedance.
-7. **VSWR / Return Loss Converter** — computes VSWR, return loss, and reflection coefficient.
-8. **Frequency / Wavelength Converter** — converts between MHz and meters for HF planning.
-9. **PCB Impedance Calculator** — computes single-ended microstrip impedance and differential impedance for paired traces.
-10. **LC Resonant Frequency** — resonant frequency and characteristic impedance of an LC pair, e.g. decoupling-capacitor self-resonance.
-11. **HF Band & Antenna Formulas** — identifies the HF amateur band and computes λ/4 and λ/2 antenna lengths.
-
-### Graphical tools
-
-12. **Smith Chart** — plots a load impedance on the Smith chart with reflection coefficient and VSWR circle.
-13. **Antenna Radiation Pattern** — polar plot of the radiation pattern of a centre-fed dipole.
-14. **Filter Calculator** — cutoff frequency, schematic and magnitude response of RC, RL and LC low-/high-pass filters.
-15. **Measurement Chain** — reconstructs the actual emission level from the receiver reading via antenna factor, cable loss, preamplifier and attenuator, with a signal-chain block diagram.
-16. **Measurement Uncertainty** — CISPR 16-4-2 uncertainty budget builder with editable contributions per automotive EMC test method (CISPR 25, ISO 11452), giving combined and expanded uncertainty (k = 2).
+1. **Magnetic Field Units** — converts between flux density (T, Gauss, dBpT) and field strength (A/m, Oersted, dBµA/m), assuming air (B = µ₀·H).
+2. **Rise Time / Bandwidth** — relates signal rise time, 3 dB bandwidth and knee frequency for EMC estimates.
+3. **Field Strength / Power Density** — far-field E-field and power density of a radiator at a given distance.
+4. **dB Unit Converter** — converts a level into all common dB and linear units for voltage (dBµV, dBmV, dBV), current (dBµA, dBmA) and power (dBm, dBW), at a reference impedance.
+5. **VSWR / Return Loss Converter** — computes VSWR, return loss, and reflection coefficient.
+6. **Frequency / Wavelength Converter** — converts between MHz and meters for HF planning.
+7. **Filter Calculator** — cutoff frequency, schematic and magnitude response of RC, RL and LC low-/high-pass filters.
+8. **Measurement Chain** — reconstructs the actual emission level from the receiver reading via antenna factor, cable loss, preamplifier and attenuator, with a signal-chain block diagram.
+9. **RI Antenna Method** — required amplifier power for a target field strength in radiated immunity testing (ISO 11452-2).
+10. **BCI** — bulk current injection: converts injected current, forward power and probe transfer impedance (ISO 11452-4).
+11. **Measurement Uncertainty** — CISPR 16-4-2 uncertainty budget builder with editable contributions per automotive EMC test method (CISPR 25, ISO 11452), giving combined and expanded uncertainty (k = 2).
 
 ## Run locally
 

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=11">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=12">
 <script>
   (function () {
     try {
@@ -38,49 +38,10 @@
 
 <main id="main">
 
-<!-- ====== Shielding Effectiveness ====== -->
-<section id="shielding" class="card">
-  <div class="card-head">
-    <span class="tag">01</span>
-    <h2>Abschirmwirkung</h2>
-    <p>Schelkunoff-Modell: Absorption + Reflexion + Mehrfachreflexion für ebene Wellen.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="shielding">
-      <label>Frequenz
-        <input name="freq" type="number" step="0.01" value="100" required>
-        <em>MHz</em>
-      </label>
-      <label>Dicke
-        <input name="t" type="number" step="0.001" value="0.5" required>
-        <em>mm</em>
-      </label>
-      <label>σᵣ <span>(rel. Cu)</span>
-        <input name="sigma_r" type="number" step="0.01" value="1.0" required>
-        <em></em>
-      </label>
-      <label>μᵣ
-        <input name="mu_r" type="number" step="0.1" value="1.0" required>
-        <em></em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="shielding">
-      <div class="r-main"><span class="label">SE_total</span><span class="value" data-key="se_total">—</span><span class="unit">dB</span></div>
-      <div class="r-grid">
-        <div><span class="label">Absorption A</span><span class="value" data-key="absorption">—</span><em>dB</em></div>
-        <div><span class="label">Reflexion R</span><span class="value" data-key="reflection">—</span><em>dB</em></div>
-        <div><span class="label">Mehrfachreflexion B</span><span class="value" data-key="multi_refl">—</span><em>dB</em></div>
-        <div><span class="label">Hauttiefe δ</span><span class="value" data-key="skin_depth_um">—</span><em>μm</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== Magnetic Field Units ====== -->
 <section id="magfield" class="card">
   <div class="card-head">
-    <span class="tag">02</span>
+    <span class="tag">01</span>
     <h2>Magnetfeld-Einheiten</h2>
     <p>Wandelt zwischen Flussdichte (T, Gauss, dBpT) und Feldstärke (A/m, Oe, dBµA/m) um — Annahme Luft, B = µ₀·H.</p>
   </div>
@@ -121,43 +82,10 @@
   </div>
 </section>
 
-<!-- ====== Skin Depth ====== -->
-<section id="skindepth" class="card">
-  <div class="card-head">
-    <span class="tag">03</span>
-    <h2>Hauttiefe (Skin-Effekt)</h2>
-    <p>Berechnet Eindringtiefe und Oberflächenwiderstand eines Leiters bei hoher Frequenz.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="skindepth">
-      <label>Frequenz
-        <input name="freq" type="number" step="0.01" value="100" required>
-        <em>MHz</em>
-      </label>
-      <label>σᵣ <span>(rel. Cu)</span>
-        <input name="sigma_r" type="number" step="0.01" value="1.0" required>
-        <em></em>
-      </label>
-      <label>μᵣ
-        <input name="mu_r" type="number" step="0.1" value="1.0" required>
-        <em></em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="skindepth">
-      <div class="r-main"><span class="label">Hauttiefe δ</span><span class="value" data-key="skin_depth_um">—</span><span class="unit">µm</span></div>
-      <div class="r-grid">
-        <div><span class="label">Hauttiefe</span><span class="value" data-key="skin_depth_mm">—</span><em>mm</em></div>
-        <div><span class="label">Oberflächenwiderstand</span><span class="value" data-key="surface_resistance_mohm">—</span><em>mΩ/□</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== Rise Time / Bandwidth ====== -->
 <section id="risetime" class="card">
   <div class="card-head">
-    <span class="tag">04</span>
+    <span class="tag">02</span>
     <h2>Anstiegszeit / Bandbreite</h2>
     <p>Verknüpft Signalanstiegszeit, 3-dB-Bandbreite und Knickfrequenz für EMV-Abschätzungen.</p>
   </div>
@@ -187,7 +115,7 @@
 <!-- ====== Field Strength / Power Density ====== -->
 <section id="fieldstrength" class="card">
   <div class="card-head">
-    <span class="tag">05</span>
+    <span class="tag">03</span>
     <h2>Feldstärke / Leistungsdichte</h2>
     <p>Berechnet die Fernfeld-Feldstärke und Leistungsdichte eines Strahlers in gegebenem Abstand.</p>
   </div>
@@ -222,7 +150,7 @@
 <!-- ====== dB Unit Converter ====== -->
 <section id="db" class="card">
   <div class="card-head">
-    <span class="tag">06</span>
+    <span class="tag">04</span>
     <h2>dB-Einheiten-Konverter</h2>
     <p>Rechnet einen Pegel in alle gängigen dB- und Linearwerte für Spannung, Strom und Leistung um — an einer Bezugsimpedanz.</p>
   </div>
@@ -288,7 +216,7 @@
 <!-- ====== VSWR / Return Loss ====== -->
 <section id="vswr" class="card">
   <div class="card-head">
-    <span class="tag">07</span>
+    <span class="tag">05</span>
     <h2>VSWR / Rückflussdämpfung</h2>
     <p>Berechnet aus VSWR oder Return Loss die jeweils andere Kennzahl.</p>
   </div>
@@ -320,7 +248,7 @@
 <!-- ====== Frequency / Wavelength ====== -->
 <section id="wavelength" class="card">
   <div class="card-head">
-    <span class="tag">08</span>
+    <span class="tag">06</span>
     <h2>Frequenz / Wellenlänge</h2>
     <p>Wandelt zwischen MHz und Meter um für HF-Planung und Antennendesign.</p>
   </div>
@@ -347,162 +275,10 @@
   </div>
 </section>
 
-<!-- ====== PCB Impedance ====== -->
-<section id="pcb" class="card">
-  <div class="card-head">
-    <span class="tag">09</span>
-    <h2>PCB-Impedanz</h2>
-    <p>Berechnet Single-Ended- und differentielle Impedanz einer Mikrostreifenleitung.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="pcb">
-      <label>Spurbreite <span>W</span>
-        <input name="w" type="number" step="0.001" value="0.4" required>
-        <em>mm</em>
-      </label>
-      <label>Dielektrikumhöhe <span>H</span>
-        <input name="h" type="number" step="0.001" value="0.2" required>
-        <em>mm</em>
-      </label>
-      <label>Kupferdicke <span>T</span>
-        <input name="t" type="number" step="0.001" value="0.035" required>
-        <em>mm</em>
-      </label>
-      <label>Permittivität <span>εᵣ</span>
-        <input name="er" type="number" step="0.01" value="4.3" required>
-        <em></em>
-      </label>
-      <label>Spurabstand <span>S</span>
-        <input name="s" type="number" step="0.001" value="0.2" required>
-        <em>mm</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="pcb">
-      <div class="r-main"><span class="label">Z₀</span><span class="value" data-key="z0">—</span><span class="unit">Ω</span></div>
-      <div class="r-grid">
-        <div><span class="label">Z_diff</span><span class="value" data-key="z_diff">—</span><em>Ω</em></div>
-        <div><span class="label">Kopplungsfaktor</span><span class="value" data-key="coupling">—</span></div>
-        <div><span class="label">ε_eff</span><span class="value" data-key="er_eff">—</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== LC Resonant Frequency ====== -->
-<section id="lcres" class="card">
-  <div class="card-head">
-    <span class="tag">10</span>
-    <h2>LC-Resonanzfrequenz</h2>
-    <p>Berechnet die Resonanzfrequenz, z.B. die Eigenresonanz eines Abblockkondensators.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="lcres">
-      <label>Induktivität <span>L</span>
-        <input name="l" type="number" step="0.001" value="1" required>
-        <em>nH</em>
-      </label>
-      <label>Kapazität <span>C</span>
-        <input name="c" type="number" step="0.001" value="100" required>
-        <em>pF</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="lcres">
-      <div class="r-main"><span class="label">Resonanzfrequenz</span><span class="value" data-key="frequency_mhz">—</span><span class="unit">MHz</span></div>
-      <div class="r-grid">
-        <div><span class="label">Kennimpedanz √(L/C)</span><span class="value" data-key="char_impedance">—</span><em>Ω</em></div>
-        <div><span class="label">L</span><span class="value" data-key="l_nh">—</span><em>nH</em></div>
-        <div><span class="label">C</span><span class="value" data-key="c_pf">—</span><em>pF</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== HF Bands / Antenne ====== -->
-<section id="hfband" class="card">
-  <div class="card-head">
-    <span class="tag">11</span>
-    <h2>HF-Bänder & Antenne</h2>
-    <p>Bestimmt HF-Band, λ/4 und λ/2 für eine eingegebene Frequenz.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="hfband">
-      <label>Frequenz
-        <input name="freq" type="number" step="0.01" value="14" required>
-        <em>MHz</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="hfband">
-      <div class="r-main"><span class="label">Band</span><span class="value" data-key="band_name">—</span></div>
-      <div class="r-grid">
-        <div><span class="label">Frequenz</span><span class="value" data-key="frequency_mhz">—</span><em>MHz</em></div>
-        <div><span class="label">λ/4</span><span class="value" data-key="quarter_wave_m">—</span><em>m</em></div>
-        <div><span class="label">λ/2</span><span class="value" data-key="half_wave_m">—</span><em>m</em></div>
-        <div><span class="label">Bandbereich</span><span class="value" data-key="band_range">—</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Smith Chart (graph) ====== -->
-<section id="smith" class="card">
-  <div class="card-head">
-    <span class="tag">12</span>
-    <h2>Smith-Diagramm</h2>
-    <p>Stellt eine Lastimpedanz im Smith-Diagramm dar, mit Reflexionsfaktor und VSWR-Kreis.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-graph="smith">
-      <label>Lastwiderstand <span>R</span>
-        <input name="r" type="number" step="0.1" value="75" required>
-        <em>Ω</em>
-      </label>
-      <label>Lastreaktanz <span>X</span>
-        <input name="x" type="number" step="0.1" value="30" required>
-        <em>Ω</em>
-      </label>
-      <label>Bezugsimpedanz <span>Z₀</span>
-        <input name="z0" type="number" step="0.1" value="50" required>
-        <em>Ω</em>
-      </label>
-      <button type="submit">Zeichnen</button>
-    </form>
-    <div class="graph-panel" data-graph-panel="smith">
-      <canvas width="380" height="380"></canvas>
-      <div class="graph-readout">—</div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Antenna Pattern (graph) ====== -->
-<section id="pattern" class="card">
-  <div class="card-head">
-    <span class="tag">13</span>
-    <h2>Antennen-Strahlungsdiagramm</h2>
-    <p>Polardiagramm der Strahlungscharakteristik eines mittengespeisten Dipols.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-graph="pattern">
-      <label>Dipollänge <span>L / λ</span>
-        <input name="length" type="number" step="0.01" value="0.5" required>
-        <em>λ</em>
-      </label>
-      <p class="hint-line">0,5 = Halbwellendipol · 1,0 = Ganzwellendipol · &gt;1 erzeugt Nebenkeulen.</p>
-      <button type="submit">Zeichnen</button>
-    </form>
-    <div class="graph-panel" data-graph-panel="pattern">
-      <canvas width="380" height="380"></canvas>
-      <div class="graph-readout">—</div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== Filter Calculator (graph) ====== -->
 <section id="filter" class="card">
   <div class="card-head">
-    <span class="tag">14</span>
+    <span class="tag">07</span>
     <h2>Filter-Rechner</h2>
     <p>Grenzfrequenz, Schaltbild und Amplitudengang gängiger RC-, RL- und LC-Filter (Hoch- und Tiefpass).</p>
   </div>
@@ -545,7 +321,7 @@
 <!-- ====== Measurement Chain (graph) ====== -->
 <section id="chain" class="card">
   <div class="card-head">
-    <span class="tag">15</span>
+    <span class="tag">08</span>
     <h2>Messkette (Störaussendung)</h2>
     <p>Rechnet die Empfängeranzeige über Antennenfaktor, Kabeldämpfung, Vorverstärker und Dämpfungsglied auf den tatsächlichen Störpegel zurück.</p>
   </div>
@@ -587,10 +363,74 @@
   </div>
 </section>
 
+<!-- ====== RI Antenna Method (graph) ====== -->
+<section id="ri" class="card">
+  <div class="card-head">
+    <span class="tag">09</span>
+    <h2>RI Antennenmethode</h2>
+    <p>Erforderliche Verstärkerleistung für eine Ziel-Feldstärke bei gestrahlter Störfestigkeit (ISO 11452-2).</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="ri">
+      <label>Ziel-Feldstärke <span>E</span>
+        <input name="e_target" type="number" step="any" value="100" required>
+        <em>V/m</em>
+      </label>
+      <label>Antennengewinn
+        <input name="gain" type="number" step="any" value="6">
+        <em>dBi</em>
+      </label>
+      <label>Abstand
+        <input name="distance" type="number" step="any" value="1" required>
+        <em>m</em>
+      </label>
+      <label>Kabeldämpfung
+        <input name="cable" type="number" step="any" value="2">
+        <em>dB</em>
+      </label>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="ri">
+      <canvas width="480" height="180"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== BCI (graph) ====== -->
+<section id="bci" class="card">
+  <div class="card-head">
+    <span class="tag">10</span>
+    <h2>BCI — Bulk Current Injection</h2>
+    <p>Wandelt Injektionsstrom, Vorlaufleistung und Zangen-Transferimpedanz nach ISO 11452-4.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="bci">
+      <label>Injektionsstrom <span>I</span>
+        <input name="current" type="number" step="any" value="100" required>
+        <em>mA</em>
+      </label>
+      <label>Kalibrier-Impedanz <span>R</span>
+        <input name="r" type="number" step="any" value="50">
+        <em>Ω</em>
+      </label>
+      <label>Transferimpedanz <span>Z_T</span>
+        <input name="zt" type="number" step="any" value="0">
+        <em>dBΩ</em>
+      </label>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="bci">
+      <canvas width="480" height="180"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
 <!-- ====== Measurement Uncertainty ====== -->
 <section id="uncertainty" class="card card-wide">
   <div class="card-head">
-    <span class="tag">16</span>
+    <span class="tag">11</span>
     <h2>Messunsicherheit</h2>
     <p>Unsicherheitsbudget nach CISPR 16-4-2 — kombinierte und erweiterte Unsicherheit (k = 2, 95 %) für KFZ-EMV-Prüfverfahren.</p>
   </div>
@@ -762,82 +602,6 @@ function themeColors() {
   };
 }
 
-function drawSmith(panel, result) {
-  const canvas = panel.querySelector("canvas");
-  const ctx = canvas.getContext("2d");
-  const c = themeColors();
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-  const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 14;
-  const PX = g => cx + g * R, PY = g => cy - g * R;
-
-  ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.stroke();
-
-  [0, 0.2, 0.5, 1, 2, 5].forEach(r => {
-    ctx.beginPath(); ctx.arc(PX(r / (r + 1)), cy, R / (r + 1), 0, 2 * Math.PI); ctx.stroke();
-  });
-  ctx.save();
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.clip();
-  [0.2, 0.5, 1, 2, 5].forEach(x => {
-    [1, -1].forEach(sgn => {
-      const xx = x * sgn;
-      ctx.beginPath();
-      ctx.arc(PX(1), PY(1 / xx), R / Math.abs(xx), 0, 2 * Math.PI);
-      ctx.stroke();
-    });
-  });
-  ctx.restore();
-
-  ctx.strokeStyle = c.warn; ctx.setLineDash([4, 3]);
-  ctx.beginPath(); ctx.arc(cx, cy, result.gamma_mag * R, 0, 2 * Math.PI); ctx.stroke();
-  ctx.setLineDash([]);
-
-  const px = PX(result.gamma_re), py = PY(result.gamma_im);
-  ctx.fillStyle = c.accent;
-  ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fill();
-  ctx.strokeStyle = c.bg; ctx.lineWidth = 1.5; ctx.stroke();
-
-  const sign = result.gamma_im >= 0 ? "+" : "−";
-  setReadout(canvas, `Γ = ${result.gamma_re} ${sign} j${Math.abs(result.gamma_im)} · |Γ| = ${result.gamma_mag} · VSWR = ${result.vswr ?? "∞"} · RL = ${result.return_loss ?? "0"} dB`);
-}
-
-function drawPattern(panel, result) {
-  const canvas = panel.querySelector("canvas");
-  const ctx = canvas.getContext("2d");
-  const c = themeColors();
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-  const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 20;
-
-  ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
-  [0.25, 0.5, 0.75, 1].forEach(f => {
-    ctx.beginPath(); ctx.arc(cx, cy, f * R, 0, 2 * Math.PI); ctx.stroke();
-  });
-  for (let a = 0; a < 360; a += 30) {
-    const t = a * Math.PI / 180;
-    ctx.beginPath(); ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + R * Math.cos(t), cy + R * Math.sin(t)); ctx.stroke();
-  }
-
-  ctx.strokeStyle = c.accent; ctx.fillStyle = c.accent; ctx.lineWidth = 2;
-  ctx.beginPath();
-  result.points.forEach((p, i) => {
-    const t = (p.angle - 90) * Math.PI / 180;
-    const r = p.amp * R;
-    const x = cx + r * Math.cos(t), y = cy + r * Math.sin(t);
-    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-  });
-  ctx.closePath();
-  ctx.globalAlpha = 0.13; ctx.fill(); ctx.globalAlpha = 1;
-  ctx.stroke();
-
-  setReadout(canvas, result.hpbw != null
-    ? `Halbwertsbreite (HPBW) ≈ ${result.hpbw}°`
-    : "Keine ausgeprägte Hauptkeule");
-}
-
 function fmtFreq(hz) {
   if (hz >= 1e6) return (hz / 1e6).toFixed(2) + " MHz";
   if (hz >= 1e3) return (hz / 1e3).toFixed(2) + " kHz";
@@ -856,6 +620,35 @@ function drawBox(ctx, c, cx, cy, w, h, label) {
   ctx.textBaseline = "middle";
   ctx.fillText(label, cx, cy + 1);
   ctx.textBaseline = "alphabetic";
+}
+
+/* Row of labelled blocks linked by arrows */
+function blockRow(ctx, c, blocks, W, y) {
+  const n = blocks.length, bh = 40, gap = 24;
+  const bw = (W - 32 - (n - 1) * gap) / n;
+  blocks.forEach((b, i) => {
+    const x = 16 + i * (bw + gap);
+    ctx.fillStyle = c.bg; ctx.strokeStyle = c.dim; ctx.lineWidth = 1.4;
+    ctx.fillRect(x, y, bw, bh); ctx.strokeRect(x, y, bw, bh);
+    ctx.textAlign = "center";
+    ctx.fillStyle = c.dim; ctx.font = "10px monospace";
+    ctx.fillText(b.t, x + bw / 2, y + 17);
+    if (b.v) {
+      ctx.fillStyle = c.accent; ctx.font = "11px monospace";
+      ctx.fillText(b.v, x + bw / 2, y + 31);
+    }
+    if (i < n - 1) {
+      const ax = x + bw, ax2 = ax + gap;
+      ctx.strokeStyle = c.faint;
+      ctx.beginPath(); ctx.moveTo(ax, y + bh / 2); ctx.lineTo(ax2 - 4, y + bh / 2); ctx.stroke();
+      ctx.fillStyle = c.faint;
+      ctx.beginPath();
+      ctx.moveTo(ax2 - 4, y + bh / 2);
+      ctx.lineTo(ax2 - 10, y + bh / 2 - 4);
+      ctx.lineTo(ax2 - 10, y + bh / 2 + 4);
+      ctx.closePath(); ctx.fill();
+    }
+  });
 }
 
 function drawFilterSchematic(canvas, ftype) {
@@ -951,7 +744,6 @@ function drawChain(panel, result) {
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  // result headline
   ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
   ctx.fillText(result.result_label.toUpperCase(), 16, 24);
   ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
@@ -959,49 +751,72 @@ function drawChain(panel, result) {
   ctx.fillStyle = c.faint; ctx.font = "11px monospace";
   ctx.fillText("(" + result.result_linear + " " + result.result_linear_unit + ")", 16, 70);
 
-  // signal-chain blocks
   const first = result.mode === "radiated" ? "Antenne" : "LISN";
-  const blocks = [
+  blockRow(ctx, c, [
     {t: first, v: "+" + result.factor},
     {t: "Kabel", v: "+" + result.cable},
     {t: "Vorverst.", v: "−" + result.preamp},
     {t: "Dämpfung", v: "+" + result.atten},
     {t: "Empfänger", v: result.v_rx + ""},
-  ];
-  const n = blocks.length;
-  const bw = 70, bh = 40, gap = (W - 32 - n * bw) / (n - 1);
-  const y = 110;
-  ctx.lineWidth = 1.4;
-  blocks.forEach((b, i) => {
-    const x = 16 + i * (bw + gap);
-    ctx.fillStyle = c.bg; ctx.strokeStyle = c.dim;
-    ctx.fillRect(x, y, bw, bh); ctx.strokeRect(x, y, bw, bh);
-    ctx.textAlign = "center";
-    ctx.fillStyle = c.dim; ctx.font = "10px monospace";
-    ctx.fillText(b.t, x + bw / 2, y + 17);
-    ctx.fillStyle = c.accent; ctx.font = "11px monospace";
-    ctx.fillText(b.v, x + bw / 2, y + 31);
-    if (i < n - 1) {
-      const ax = x + bw, ax2 = x + bw + gap;
-      ctx.strokeStyle = c.faint;
-      ctx.beginPath(); ctx.moveTo(ax, y + bh / 2); ctx.lineTo(ax2 - 4, y + bh / 2); ctx.stroke();
-      ctx.fillStyle = c.faint;
-      ctx.beginPath();
-      ctx.moveTo(ax2 - 4, y + bh / 2);
-      ctx.lineTo(ax2 - 10, y + bh / 2 - 4);
-      ctx.lineTo(ax2 - 10, y + bh / 2 + 4);
-      ctx.closePath(); ctx.fill();
-    }
-  });
+  ], W, 110);
 
   ctx.fillStyle = c.faint; ctx.font = "10px monospace"; ctx.textAlign = "left";
-  ctx.fillText("EUT ▸", 16, y - 8);
-  ctx.fillText("dB-Beiträge unter den Blöcken", 16, y + bh + 24);
+  ctx.fillText("EUT ▸", 16, 102);
+  ctx.fillText("dB-Beiträge unter den Blöcken", 16, 174);
 
   setReadout(canvas, `${result.result_label} = Empfänger + Faktor + Kabel + Dämpfung − Vorverstärker = ${result.result} ${result.result_unit}`);
 }
 
-const graphDrawers = {smith: drawSmith, pattern: drawPattern, filter: drawFilter, chain: drawChain};
+function drawRI(panel, result) {
+  const canvas = panel.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const c = themeColors();
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillText("BENÖTIGTE VERSTÄRKERLEISTUNG", 16, 24);
+  ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
+  ctx.fillText(result.p_amp_w + " W", 16, 50);
+  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
+  ctx.fillText("= " + result.p_amp_dbm + " dBm  ·  netto " + result.p_net_w + " W an der Antenne", 16, 70);
+
+  blockRow(ctx, c, [
+    {t: "Verstärker", v: result.p_amp_dbm + " dBm"},
+    {t: "Kabel", v: "−" + result.cable + " dB"},
+    {t: "Antenne", v: result.gain + " dBi"},
+    {t: "E-Feld", v: result.e_target + " V/m"},
+    {t: "EUT", v: result.distance + " m"},
+  ], W, 108);
+
+  setReadout(canvas, `Für ${result.e_target} V/m in ${result.distance} m: ${result.p_amp_w} W (${result.p_amp_dbm} dBm) Verstärkerleistung nötig.`);
+}
+
+function drawBCI(panel, result) {
+  const canvas = panel.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const c = themeColors();
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillText("BENÖTIGTE VORLAUFLEISTUNG", 16, 24);
+  ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
+  ctx.fillText(result.power_w + " W", 16, 50);
+  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
+  ctx.fillText("= " + result.power_dbm + " dBm  ·  " + result.current_dbua + " dBµA  ·  Monitor " + result.monitor_dbuv + " dBµV", 16, 70);
+
+  blockRow(ctx, c, [
+    {t: "Verstärker", v: result.power_dbm + " dBm"},
+    {t: "Injekt.-Zange", v: result.current_ma + " mA"},
+    {t: "Kabelbaum", v: result.r + " Ω"},
+    {t: "EUT", v: ""},
+  ], W, 108);
+
+  setReadout(canvas, `${result.current_ma} mA Injektionsstrom in ${result.r} Ω benötigt ${result.power_w} W (${result.power_dbm} dBm) Vorlaufleistung.`);
+}
+
+const graphDrawers = {filter: drawFilter, chain: drawChain, ri: drawRI, bci: drawBCI};
 
 document.querySelectorAll("form[data-graph]").forEach(form => {
   form.addEventListener("submit", async e => {
