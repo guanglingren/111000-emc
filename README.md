@@ -21,6 +21,7 @@ Built with Flask. Designed to deploy on Render's free tier.
 
 12. **Smith Chart** — plots a load impedance on the Smith chart with reflection coefficient and VSWR circle.
 13. **Antenna Radiation Pattern** — polar plot of the radiation pattern of a centre-fed dipole.
+14. **Filter Calculator** — cutoff frequency, schematic and magnitude response of RC, RL and LC low-/high-pass filters.
 
 ## Run locally
 

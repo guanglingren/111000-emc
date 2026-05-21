@@ -576,5 +576,65 @@ def api_pattern():
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 
+@app.route("/api/filter", methods=["POST"])
+def api_filter():
+    """
+    Filter-Rechner: Grenzfrequenz und Amplitudengang von RC-, RL- und LC-Filtern.
+    Eingaben: type, r (Ω), l (µH), c (nF).
+    """
+    try:
+        data = request.get_json()
+        ftype = data.get("type", "rc_lp")
+        r = float(data.get("r") or 0)
+        l = float(data.get("l") or 0) * 1e-6   # µH -> H
+        c = float(data.get("c") or 0) * 1e-9   # nF -> F
+
+        if ftype in ("rc_lp", "rc_hp"):
+            if r <= 0 or c <= 0:
+                return jsonify({"error": "R und C müssen positiv sein."}), 400
+            fc = 1 / (2 * math.pi * r * c)
+            order = 1
+        elif ftype in ("rl_lp", "rl_hp"):
+            if r <= 0 or l <= 0:
+                return jsonify({"error": "R und L müssen positiv sein."}), 400
+            fc = r / (2 * math.pi * l)
+            order = 1
+        elif ftype in ("lc_lp", "lc_hp"):
+            if l <= 0 or c <= 0:
+                return jsonify({"error": "L und C müssen positiv sein."}), 400
+            fc = 1 / (2 * math.pi * math.sqrt(l * c))
+            order = 2
+        else:
+            return jsonify({"error": "Ungültiger Filtertyp."}), 400
+
+        highpass = ftype.endswith("_hp")
+        f0, f1 = fc / 100, fc * 100
+        n = 90
+        step = (f1 / f0) ** (1 / (n - 1))
+        points = []
+        f = f0
+        for _ in range(n):
+            ratio = f / fc
+            if order == 1:
+                num = ratio if highpass else 1.0
+                h = num / math.sqrt(1 + ratio ** 2)
+            else:
+                num = ratio ** 2 if highpass else 1.0
+                h = num / math.sqrt(1 + ratio ** 4)
+            points.append({"f": f, "db": round(20 * math.log10(h), 3)})
+            f *= step
+
+        return jsonify({
+            "ftype": ftype,
+            "fc": fc,
+            "order": order,
+            "slope": 40 if order == 2 else 20,
+            "highpass": highpass,
+            "points": points,
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

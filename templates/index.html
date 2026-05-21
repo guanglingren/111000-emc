@@ -499,6 +499,49 @@
   </div>
 </section>
 
+<!-- ====== Filter Calculator (graph) ====== -->
+<section id="filter" class="card">
+  <div class="card-head">
+    <span class="tag">14</span>
+    <h2>Filter-Rechner</h2>
+    <p>Grenzfrequenz, Schaltbild und Amplitudengang gängiger RC-, RL- und LC-Filter (Hoch- und Tiefpass).</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="filter">
+      <label>Filtertyp
+        <select name="type">
+          <option value="rc_lp">RC-Tiefpass</option>
+          <option value="rc_hp">RC-Hochpass</option>
+          <option value="rl_lp">RL-Tiefpass</option>
+          <option value="rl_hp">RL-Hochpass</option>
+          <option value="lc_lp">LC-Tiefpass</option>
+          <option value="lc_hp">LC-Hochpass</option>
+        </select>
+        <em></em>
+      </label>
+      <label>Widerstand <span>R</span>
+        <input name="r" type="number" step="any" value="1000">
+        <em>Ω</em>
+      </label>
+      <label>Induktivität <span>L</span>
+        <input name="l" type="number" step="any" value="100">
+        <em>µH</em>
+      </label>
+      <label>Kapazität <span>C</span>
+        <input name="c" type="number" step="any" value="10">
+        <em>nF</em>
+      </label>
+      <p class="hint-line">Je nach Filtertyp werden R, L und/oder C verwendet.</p>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="filter">
+      <canvas class="schematic" width="400" height="130"></canvas>
+      <canvas width="400" height="240"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
@@ -634,7 +677,8 @@ function themeColors() {
   };
 }
 
-function drawSmith(canvas, result) {
+function drawSmith(panel, result) {
+  const canvas = panel.querySelector("canvas");
   const ctx = canvas.getContext("2d");
   const c = themeColors();
   const W = canvas.width, H = canvas.height;
@@ -674,7 +718,8 @@ function drawSmith(canvas, result) {
   setReadout(canvas, `Γ = ${result.gamma_re} ${sign} j${Math.abs(result.gamma_im)} · |Γ| = ${result.gamma_mag} · VSWR = ${result.vswr ?? "∞"} · RL = ${result.return_loss ?? "0"} dB`);
 }
 
-function drawPattern(canvas, result) {
+function drawPattern(panel, result) {
+  const canvas = panel.querySelector("canvas");
   const ctx = canvas.getContext("2d");
   const c = themeColors();
   const W = canvas.width, H = canvas.height;
@@ -708,7 +753,113 @@ function drawPattern(canvas, result) {
     : "Keine ausgeprägte Hauptkeule");
 }
 
-const graphDrawers = {smith: drawSmith, pattern: drawPattern};
+function fmtFreq(hz) {
+  if (hz >= 1e6) return (hz / 1e6).toFixed(2) + " MHz";
+  if (hz >= 1e3) return (hz / 1e3).toFixed(2) + " kHz";
+  return hz.toFixed(1) + " Hz";
+}
+
+function drawBox(ctx, c, cx, cy, w, h, label) {
+  ctx.fillStyle = c.bg;
+  ctx.strokeStyle = c.dim;
+  ctx.lineWidth = 1.6;
+  ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+  ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+  ctx.fillStyle = c.accent;
+  ctx.font = "13px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, cx, cy + 1);
+  ctx.textBaseline = "alphabetic";
+}
+
+function drawFilterSchematic(canvas, ftype) {
+  const ctx = canvas.getContext("2d");
+  const c = themeColors();
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const topo = {
+    rc_lp: ["R", "C"], rc_hp: ["C", "R"],
+    rl_lp: ["L", "R"], rl_hp: ["R", "L"],
+    lc_lp: ["L", "C"], lc_hp: ["C", "L"],
+  }[ftype] || ["R", "C"];
+
+  const yW = 42, xIn = 36, xNode = W * 0.62, xOut = W - 36;
+  const xSer = (xIn + xNode) / 2;
+  ctx.strokeStyle = c.dim; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(xIn, yW); ctx.lineTo(xSer - 28, yW); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xSer + 28, yW); ctx.lineTo(xOut, yW); ctx.stroke();
+  drawBox(ctx, c, xSer, yW, 54, 22, topo[0]);
+
+  ctx.fillStyle = c.accent;
+  ctx.beginPath(); ctx.arc(xNode, yW, 3.5, 0, 2 * Math.PI); ctx.fill();
+
+  ctx.strokeStyle = c.dim;
+  ctx.beginPath(); ctx.moveTo(xNode, yW); ctx.lineTo(xNode, yW + 16); ctx.stroke();
+  drawBox(ctx, c, xNode, yW + 33, 42, 22, topo[1]);
+  ctx.beginPath(); ctx.moveTo(xNode, yW + 44); ctx.lineTo(xNode, yW + 60); ctx.stroke();
+  [11, 7, 3].forEach((hw, i) => {
+    const gy = yW + 60 + i * 4;
+    ctx.beginPath(); ctx.moveTo(xNode - hw, gy); ctx.lineTo(xNode + hw, gy); ctx.stroke();
+  });
+
+  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
+  ctx.textAlign = "left"; ctx.fillText("IN", xIn - 8, yW - 12);
+  ctx.textAlign = "right"; ctx.fillText("OUT", xOut + 8, yW - 12);
+}
+
+function drawBode(canvas, result) {
+  const ctx = canvas.getContext("2d");
+  const c = themeColors();
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const pad = {l: 44, r: 14, t: 14, b: 32};
+  const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+  const pts = result.points;
+  const lx0 = Math.log10(pts[0].f), lx1 = Math.log10(pts[pts.length - 1].f);
+  const yMax = 6, yMin = -80;
+  const X = f => pad.l + (Math.log10(f) - lx0) / (lx1 - lx0) * pw;
+  const Y = db => pad.t + (yMax - Math.max(yMin, Math.min(yMax, db))) / (yMax - yMin) * ph;
+
+  ctx.strokeStyle = c.grid; ctx.fillStyle = c.dim;
+  ctx.font = "10px monospace"; ctx.lineWidth = 1;
+  for (let db = yMax - 6; db >= yMin; db -= 20) {
+    const y = Y(db);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke();
+    ctx.textAlign = "right"; ctx.fillText(db + "", pad.l - 6, y + 3);
+  }
+  for (let d = Math.ceil(lx0); d <= Math.floor(lx1); d++) {
+    const x = X(Math.pow(10, d));
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
+  }
+
+  const xfc = X(result.fc);
+  ctx.strokeStyle = c.warn; ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(xfc, pad.t); ctx.lineTo(xfc, pad.t + ph); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = c.warn; ctx.textAlign = "center";
+  ctx.fillText("fc", xfc, pad.t + 9);
+
+  ctx.strokeStyle = c.accent; ctx.lineWidth = 2; ctx.beginPath();
+  pts.forEach((p, i) => {
+    const x = X(p.f), y = Y(p.db);
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle = c.dim; ctx.textAlign = "center";
+  ctx.fillText("Frequenz", pad.l + pw / 2, H - 6);
+}
+
+function drawFilter(panel, result) {
+  drawFilterSchematic(panel.querySelector("canvas.schematic"), result.ftype);
+  const bode = panel.querySelectorAll("canvas")[1];
+  drawBode(bode, result);
+  const kind = result.highpass ? "Hochpass" : "Tiefpass";
+  setReadout(bode, `Grenzfrequenz fc ≈ ${fmtFreq(result.fc)} · ${kind} · ${result.slope} dB/Dekade`);
+}
+
+const graphDrawers = {smith: drawSmith, pattern: drawPattern, filter: drawFilter};
 
 document.querySelectorAll("form[data-graph]").forEach(form => {
   form.addEventListener("submit", async e => {
@@ -727,7 +878,7 @@ document.querySelectorAll("form[data-graph]").forEach(form => {
         readout.classList.add("error");
       } else {
         readout.classList.remove("error");
-        graphDrawers[name](panel.querySelector("canvas"), result);
+        graphDrawers[name](panel, result);
       }
     } catch (err) {
       readout.textContent = "Netzwerkfehler — bitte erneut versuchen.";
