@@ -35,7 +35,7 @@ body {
 /* ===== Masthead ===== */
 .masthead {
   border-bottom: 1px solid var(--border);
-  padding: 32px 0;
+  padding: 20px 0;
   background: rgba(13, 14, 16, 0.85);
   backdrop-filter: blur(8px);
   position: sticky;
@@ -48,10 +48,8 @@ body {
   margin: 0 auto;
   padding: 0 32px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 32px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .brand {
@@ -81,171 +79,47 @@ body {
   margin-top: 2px;
 }
 
-nav {
+/* ===== Single-level tab navigation ===== */
+.tab-nav {
   display: flex;
-  gap: 24px;
-  font-size: 12px;
-}
-
-nav a {
-  color: var(--text-dim);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding-bottom: 4px;
-  border-bottom: 1px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-nav a:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.group-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.group-nav a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-dim);
-  text-decoration: none;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
-}
-
-.group-nav a.active,
-.group-nav a:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-  background: rgba(212, 255, 63, 0.1);
-}
-
-.sub-nav {
-  display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
 }
 
-.sub-nav button {
+.tab-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-nav button {
+  flex: 0 0 auto;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
+  padding: 9px 16px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-dim);
+  font-family: var(--mono);
   font-size: 12px;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 
-.sub-nav button.active,
-.sub-nav button:hover {
+.tab-nav button.active,
+.tab-nav button:hover {
   color: var(--accent);
   border-color: var(--accent);
   background: rgba(212, 255, 63, 0.1);
 }
 
-.sub-nav.hidden {
-  display: none !important;
-}
-
-.card.hidden {
+.card.hidden,
+[data-db-fields].hidden {
   display: none;
-}
-
-@media (max-width: 920px) {
-  .masthead {
-    padding: 14px 0;
-  }
-
-  .masthead-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-  }
-
-  /* Single-row, horizontally scrollable nav keeps the sticky header compact */
-  .group-nav,
-  .sub-nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 8px;
-  }
-
-  .group-nav::-webkit-scrollbar,
-  .sub-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .group-nav {
-    margin-top: 12px;
-  }
-
-  .sub-nav {
-    margin-top: 10px;
-    padding-top: 12px;
-  }
-
-  .group-nav a,
-  .sub-nav button {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    min-width: 0;
-    font-size: 11px;
-    padding: 8px 14px;
-  }
-
-  .card-head {
-    padding: 18px 20px 16px;
-  }
-
-  .card-body {
-    gap: 0;
-  }
-
-  .inputs,
-  .results {
-    padding: 20px;
-  }
-
-  main {
-    padding: 24px 16px;
-  }
-}
-
-@media (max-width: 720px) {
-  main {
-    padding: 18px 12px;
-  }
-
-  .brand-mark {
-    font-size: 26px;
-  }
-
-  .brand h1 {
-    font-size: 19px;
-  }
-
-  .r-main .value {
-    font-size: 34px;
-  }
 }
 
 /* ===== Main ===== */
@@ -317,32 +191,12 @@ main {
   gap: 0;
 }
 
-@media (max-width: 920px) {
-  .card-body { grid-template-columns: 1fr; }
-}
-
 .inputs {
   padding: 24px 32px;
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-@media (max-width: 920px) {
-  .inputs { border-right: none; border-bottom: 1px solid var(--border); }
-}
-
-@media (max-width: 720px) {
-  .inputs label {
-    grid-template-columns: 1fr;
-  }
-  .inputs label em {
-    grid-column: 1;
-    grid-row: auto;
-    margin: 0;
-    position: static;
-  }
 }
 
 .inputs label {
@@ -370,9 +224,17 @@ main {
   font-size: 11px;
   min-width: 30px;
   text-align: left;
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: -32px;
+  margin-right: 12px;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
-.inputs input {
+.inputs input,
+.inputs select {
   grid-column: 1 / -1;
   background: var(--bg-input);
   border: 1px solid var(--border);
@@ -385,18 +247,14 @@ main {
   transition: border-color 0.15s;
 }
 
-.inputs input:focus {
+.inputs input:focus,
+.inputs select:focus {
   border-color: var(--accent);
 }
 
-.inputs label em {
-  grid-column: 2;
-  grid-row: 2;
-  margin-top: -32px;
-  margin-right: 12px;
-  pointer-events: none;
-  position: relative;
-  z-index: 1;
+.hint-line {
+  font-size: 12px;
+  color: var(--text-dim);
 }
 
 button[type="submit"] {
@@ -463,18 +321,6 @@ button[type="submit"]:disabled {
   gap: 12px;
   padding-bottom: 16px;
   border-bottom: 1px dashed var(--border);
-}
-
-/* ===== Mobile card override ===== */
-.card,
-.card-body {
-  max-height: none !important;
-  height: auto !important;
-  overflow: visible !important;
-}
-
-.card-head {
-  position: static !important;
 }
 
 .r-main .label {
@@ -551,4 +397,67 @@ footer .hint {
   font-family: var(--serif);
   font-style: italic;
   font-size: 12px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 920px) {
+  .masthead {
+    padding: 14px 0;
+  }
+
+  .masthead-inner {
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .card-body {
+    grid-template-columns: 1fr;
+  }
+
+  .inputs {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .results {
+    padding: 20px;
+  }
+
+  .card-head {
+    padding: 18px 20px 16px;
+  }
+
+  main {
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  main {
+    padding: 18px 12px;
+  }
+
+  .brand-mark {
+    font-size: 26px;
+  }
+
+  .brand h1 {
+    font-size: 19px;
+  }
+
+  .inputs label {
+    grid-template-columns: 1fr;
+  }
+
+  .inputs label em {
+    grid-column: 1;
+    grid-row: auto;
+    margin: 0;
+    position: static;
+  }
+
+  .r-main .value {
+    font-size: 34px;
+  }
 }

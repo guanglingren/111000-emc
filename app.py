@@ -7,6 +7,9 @@ import math
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+# Preserve key insertion order in JSON responses so the frontend can treat
+# the first key as the primary result.
+app.json.sort_keys = False
 
 # Speed of light in vacuum (m/s)
 C0 = 2.99792458e8
@@ -187,119 +190,72 @@ def api_shielding():
 @app.route("/api/db", methods=["POST"])
 def api_db():
     """
-    dB / Verhältniskonverter.
-    Inputs: value, mode ("db_to_ratio" or "ratio_to_db"), kind ("power" or "voltage")
+    dB-Konverter mit zwei Modi:
+      mode="ratio" — Verhältnis <-> dB (Leistung oder Spannung).
+      mode="level" — Pegel-Einheiten dBµV/dBµA/dBm und Linearwerte µV/µA/mW
+                     an einer Bezugsimpedanz.
     """
     try:
         data = request.get_json()
+        mode = data.get("mode", "ratio")
         value = float(data["value"])
-        mode = data.get("mode", "db_to_ratio")
-        kind = data.get("kind", "power")
 
-        if mode == "db_to_ratio":
-            if kind == "voltage":
-                ratio = 10 ** (value / 20)
-            else:
-                ratio = 10 ** (value / 10)
-            return jsonify({
-                "ratio": round(ratio, 6),
-                "db": round(value, 4),
-            })
-        elif mode == "ratio_to_db":
-            if value <= 0:
-                return jsonify({"error": "Verhältnis muss positiv sein."}), 400
-            if kind == "voltage":
-                db = 20 * math.log10(value)
-            else:
-                db = 10 * math.log10(value)
-            return jsonify({
-                "db": round(db, 4),
-                "ratio": round(value, 6),
-            })
-        else:
-            return jsonify({"error": "Ungültiger Modus."}), 400
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+        if mode == "ratio":
+            kind = data.get("kind", "power")
+            direction = data.get("direction", "db_to_ratio")
+            factor = 20 if kind == "voltage" else 10
 
-
-@app.route("/api/power", methods=["POST"])
-def api_power():
-    """
-    dBm <-> mW Konverter.
-    Inputs: value, direction ("dbm_to_mw" or "mw_to_dbm")
-    """
-    try:
-        data = request.get_json()
-        value = float(data["value"])
-        direction = data.get("direction", "dbm_to_mw")
-
-        if direction == "dbm_to_mw":
-            mw = 10 ** (value / 10)
-            return jsonify({
-                "mw": round(mw, 6),
-                "dbm": round(value, 4),
-            })
-        elif direction == "mw_to_dbm":
-            if value <= 0:
-                return jsonify({"error": "Leistung muss positiv sein."}), 400
-            dbm = 10 * math.log10(value)
-            return jsonify({
-                "dbm": round(dbm, 4),
-                "mw": round(value, 6),
-            })
-        else:
+            if direction == "db_to_ratio":
+                return jsonify({
+                    "ratio": round(10 ** (value / factor), 6),
+                    "db": round(value, 4),
+                })
+            elif direction == "ratio_to_db":
+                if value <= 0:
+                    return jsonify({"error": "Verhältnis muss positiv sein."}), 400
+                return jsonify({
+                    "db": round(factor * math.log10(value), 4),
+                    "ratio": round(value, 6),
+                })
             return jsonify({"error": "Ungültige Richtung."}), 400
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
+        if mode == "level":
+            unit = data.get("unit", "dbuv")
+            z = float(data.get("z") or 50)
 
-@app.route("/api/dbunit", methods=["POST"])
-def api_dbunit():
-    """
-    dB-Einheiten-Konverter: dBµV, dBµA, dBm und ihre Linearwerte (µV, µA, mW).
-    Eingaben: value, unit, z (Bezugsimpedanz in Ohm).
-    """
-    try:
-        data = request.get_json()
-        value = float(data["value"])
-        unit = data.get("unit", "dbuv")
-        z = float(data.get("z") or 50)
+            if z <= 0:
+                return jsonify({"error": "Bezugsimpedanz muss positiv sein."}), 400
+            if unit in ("uv", "ua", "mw") and value <= 0:
+                return jsonify({"error": "Linearwerte müssen positiv sein."}), 400
 
-        if z <= 0:
-            return jsonify({"error": "Bezugsimpedanz muss positiv sein."}), 400
+            if unit == "dbm":
+                p_w = 10 ** (value / 10) / 1000
+            elif unit == "mw":
+                p_w = value / 1000
+            elif unit == "dbuv":
+                p_w = (10 ** (value / 20) * 1e-6) ** 2 / z
+            elif unit == "uv":
+                p_w = (value * 1e-6) ** 2 / z
+            elif unit == "dbua":
+                p_w = (10 ** (value / 20) * 1e-6) ** 2 * z
+            elif unit == "ua":
+                p_w = (value * 1e-6) ** 2 * z
+            else:
+                return jsonify({"error": "Ungültige Einheit."}), 400
 
-        if unit in ("uv", "ua", "mw") and value <= 0:
-            return jsonify({"error": "Linearwerte müssen positiv sein."}), 400
+            volt = math.sqrt(p_w * z)
+            amp = math.sqrt(p_w / z)
+            return jsonify({
+                "dbuv": round(20 * math.log10(volt / 1e-6), 2),
+                "dbua": round(20 * math.log10(amp / 1e-6), 2),
+                "dbm": round(10 * math.log10(p_w * 1000), 2),
+                "uv": round(volt / 1e-6, 4),
+                "ua": round(amp / 1e-6, 4),
+                "mw": round(p_w * 1000, 6),
+                "impedance": round(z, 2),
+            })
 
-        if unit == "dbm":
-            p_w = 10 ** (value / 10) / 1000
-        elif unit == "mw":
-            p_w = value / 1000
-        elif unit == "dbuv":
-            volt = 10 ** (value / 20) * 1e-6
-            p_w = volt**2 / z
-        elif unit == "uv":
-            p_w = (value * 1e-6) ** 2 / z
-        elif unit == "dbua":
-            amp = 10 ** (value / 20) * 1e-6
-            p_w = amp**2 * z
-        elif unit == "ua":
-            p_w = (value * 1e-6) ** 2 * z
-        else:
-            return jsonify({"error": "Ungültige Einheit."}), 400
-
-        volt = math.sqrt(p_w * z)
-        amp = math.sqrt(p_w / z)
-
-        return jsonify({
-            "dbuv": round(20 * math.log10(volt / 1e-6), 2),
-            "dbua": round(20 * math.log10(amp / 1e-6), 2),
-            "dbm": round(10 * math.log10(p_w * 1000), 2),
-            "uv": round(volt / 1e-6, 4),
-            "ua": round(amp / 1e-6, 4),
-            "mw": round(p_w * 1000, 6),
-            "impedance": round(z, 2),
-        })
+        return jsonify({"error": "Ungültiger Modus."}), 400
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=4">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
 </head>
 <body>
 
@@ -20,20 +20,14 @@
         <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
       </div>
     </div>
-    <nav class="group-nav">
-      <a href="#main" data-tab="emv" class="active">EMV</a>
-      <a href="#main" data-tab="db">dB / Leistung</a>
-      <a href="#main" data-tab="cable">Kabel / PCB</a>
-      <a href="#main" data-tab="hf">HF / Antenne</a>
-    </nav>
-    <div class="sub-nav" aria-label="Calculator tabs"></div>
+    <nav class="tab-nav" aria-label="Rechner"></nav>
   </div>
 </header>
 
 <main id="main">
 
 <!-- ====== Microstrip ====== -->
-<section id="microstrip" class="card" data-group="emv">
+<section id="microstrip" class="card">
   <div class="card-head">
     <span class="tag">01</span>
     <h2>Mikrostreifen-Charakteristik</h2>
@@ -71,7 +65,7 @@
 </section>
 
 <!-- ====== Near / Far Field ====== -->
-<section id="nearfield" class="card" data-group="emv">
+<section id="nearfield" class="card">
   <div class="card-head">
     <span class="tag">02</span>
     <h2>Nahfeld / Fernfeld</h2>
@@ -101,7 +95,7 @@
 </section>
 
 <!-- ====== Shielding Effectiveness ====== -->
-<section id="shielding" class="card" data-group="emv">
+<section id="shielding" class="card">
   <div class="card-head">
     <span class="tag">03</span>
     <h2>Abschirmwirkung</h2>
@@ -140,9 +134,9 @@
 </section>
 
 <!-- ====== Magnetic Field Units ====== -->
-<section id="magfield" class="card" data-group="emv">
+<section id="magfield" class="card">
   <div class="card-head">
-    <span class="tag">16</span>
+    <span class="tag">04</span>
     <h2>Magnetfeld-Einheiten</h2>
     <p>Wandelt zwischen Flussdichte (T, Gauss, dBpT) und Feldstärke (A/m, Oe, dBµA/m) um — Annahme Luft, B = µ₀·H.</p>
   </div>
@@ -184,9 +178,9 @@
 </section>
 
 <!-- ====== Skin Depth ====== -->
-<section id="skindepth" class="card" data-group="emv">
+<section id="skindepth" class="card">
   <div class="card-head">
-    <span class="tag">17</span>
+    <span class="tag">05</span>
     <h2>Hauttiefe (Skin-Effekt)</h2>
     <p>Berechnet Eindringtiefe und Oberflächenwiderstand eines Leiters bei hoher Frequenz.</p>
   </div>
@@ -217,9 +211,9 @@
 </section>
 
 <!-- ====== Rise Time / Bandwidth ====== -->
-<section id="risetime" class="card" data-group="emv">
+<section id="risetime" class="card">
   <div class="card-head">
-    <span class="tag">18</span>
+    <span class="tag">06</span>
     <h2>Anstiegszeit / Bandbreite</h2>
     <p>Verknüpft Signalanstiegszeit, 3-dB-Bandbreite und Knickfrequenz für EMV-Abschätzungen.</p>
   </div>
@@ -233,7 +227,7 @@
         <input name="bandwidth" type="number" step="0.01" value="" placeholder="MHz">
         <em>MHz</em>
       </label>
-      <p style="font-size:12px;color:#8a8f99;">Geben Sie entweder Anstiegszeit oder Bandbreite ein.</p>
+      <p class="hint-line">Geben Sie entweder Anstiegszeit oder Bandbreite ein.</p>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="risetime">
@@ -247,9 +241,9 @@
 </section>
 
 <!-- ====== Field Strength / Power Density ====== -->
-<section id="fieldstrength" class="card" data-group="emv">
+<section id="fieldstrength" class="card">
   <div class="card-head">
-    <span class="tag">19</span>
+    <span class="tag">07</span>
     <h2>Feldstärke / Leistungsdichte</h2>
     <p>Berechnet die Fernfeld-Feldstärke und Leistungsdichte eines Strahlers in gegebenem Abstand.</p>
   </div>
@@ -281,81 +275,78 @@
   </div>
 </section>
 
-<!-- ====== dB Converter ====== -->
-<section id="db" class="card" data-group="db">
+<!-- ====== dB Converter (unified) ====== -->
+<section id="db" class="card">
   <div class="card-head">
-    <span class="tag">04</span>
-    <h2>dB / Verhältnis-Konverter</h2>
-    <p>Leistungs- und Spannungsverhältnisse schnell zwischen dB und Linearwert umrechnen.</p>
+    <span class="tag">08</span>
+    <h2>dB-Konverter</h2>
+    <p>Verhältnis ⇄ dB sowie Pegel-Einheiten (dBµV, dBµA, dBm) und ihre Linearwerte in einem Rechner.</p>
   </div>
   <div class="card-body">
     <form class="inputs" data-form="db">
-      <label>Wert
-        <input name="value" type="number" step="0.01" value="3" required>
-        <em>dB oder Verhältnis</em>
+      <label>Konversionstyp
+        <select name="mode" data-db-mode>
+          <option value="ratio">Verhältnis ⇄ dB</option>
+          <option value="level">Pegel-Einheiten</option>
+        </select>
+        <em></em>
       </label>
-      <label>Typ
+      <label>Wert
+        <input name="value" type="number" step="any" value="3" required>
+        <em></em>
+      </label>
+      <label data-db-fields="ratio">Größe
         <select name="kind">
           <option value="power">Leistung</option>
           <option value="voltage">Spannung / Strom</option>
         </select>
         <em></em>
       </label>
-      <label>Konversion
-        <select name="mode">
+      <label data-db-fields="ratio">Richtung
+        <select name="direction">
           <option value="db_to_ratio">dB → Verhältnis</option>
           <option value="ratio_to_db">Verhältnis → dB</option>
         </select>
         <em></em>
+      </label>
+      <label data-db-fields="level">Eingangseinheit
+        <select name="unit">
+          <option value="dbuv">dBµV</option>
+          <option value="dbua">dBµA</option>
+          <option value="dbm">dBm</option>
+          <option value="uv">µV (linear)</option>
+          <option value="ua">µA (linear)</option>
+          <option value="mw">mW (linear)</option>
+        </select>
+        <em></em>
+      </label>
+      <label data-db-fields="level">Bezugsimpedanz <span>Z</span>
+        <input name="z" type="number" step="0.1" value="50">
+        <em>Ω</em>
       </label>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="db">
       <div class="r-main"><span class="label">Ergebnis</span><span class="value">—</span></div>
       <div class="r-grid">
-        <div><span class="label">dB</span><span class="value" data-key="db">—</span></div>
-        <div><span class="label">Verhältnis</span><span class="value" data-key="ratio">—</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== dBm / mW Converter ====== -->
-<section id="power" class="card" data-group="db">
-  <div class="card-head">
-    <span class="tag">05</span>
-    <h2>dBm ↔ mW</h2>
-    <p>Schnelle Umrechnung zwischen dBm-Pegel und Milliwatt-Leistung.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="power">
-      <label>Wert
-        <input name="value" type="number" step="0.01" value="0" required>
-        <em>dBm oder mW</em>
-      </label>
-      <label>Richtung
-        <select name="direction">
-          <option value="dbm_to_mw">dBm → mW</option>
-          <option value="mw_to_dbm">mW → dBm</option>
-        </select>
-        <em></em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="power">
-      <div class="r-main"><span class="label">Ergebnis</span><span class="value">—</span></div>
-      <div class="r-grid">
-        <div><span class="label">dBm</span><span class="value" data-key="dbm">—</span></div>
-        <div><span class="label">mW</span><span class="value" data-key="mw">—</span></div>
+        <div data-db-fields="ratio"><span class="label">dB</span><span class="value" data-key="db">—</span><em>dB</em></div>
+        <div data-db-fields="ratio"><span class="label">Verhältnis</span><span class="value" data-key="ratio">—</span></div>
+        <div data-db-fields="level"><span class="label">dBµV</span><span class="value" data-key="dbuv">—</span><em>dBµV</em></div>
+        <div data-db-fields="level"><span class="label">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
+        <div data-db-fields="level"><span class="label">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
+        <div data-db-fields="level"><span class="label">Spannung</span><span class="value" data-key="uv">—</span><em>µV</em></div>
+        <div data-db-fields="level"><span class="label">Strom</span><span class="value" data-key="ua">—</span><em>µA</em></div>
+        <div data-db-fields="level"><span class="label">Leistung</span><span class="value" data-key="mw">—</span><em>mW</em></div>
+        <div data-db-fields="level"><span class="label">Impedanz</span><span class="value" data-key="impedance">—</span><em>Ω</em></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ====== VSWR / Return Loss ====== -->
-<section id="vswr" class="card" data-group="db">
+<section id="vswr" class="card">
   <div class="card-head">
-    <span class="tag">06</span>
+    <span class="tag">09</span>
     <h2>VSWR / Rückflussdämpfung</h2>
     <p>Berechnet aus VSWR oder Return Loss die jeweils andere Kennzahl.</p>
   </div>
@@ -369,7 +360,7 @@
         <input name="rl" type="number" step="0.01" value="" placeholder="dB">
         <em>dB</em>
       </label>
-      <p style="font-size:12px;color:#8a8f99;">Geben Sie entweder VSWR oder Return Loss ein.</p>
+      <p class="hint-line">Geben Sie entweder VSWR oder Return Loss ein.</p>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="vswr">
@@ -385,9 +376,9 @@
 </section>
 
 <!-- ====== Frequency / Wavelength ====== -->
-<section id="wavelength" class="card" data-group="db">
+<section id="wavelength" class="card">
   <div class="card-head">
-    <span class="tag">07</span>
+    <span class="tag">10</span>
     <h2>Frequenz / Wellenlänge</h2>
     <p>Wandelt zwischen MHz und Meter um für HF-Planung und Antennendesign.</p>
   </div>
@@ -401,7 +392,7 @@
         <input name="wavelength" type="number" step="0.0001" value="">
         <em>m</em>
       </label>
-      <p style="font-size:12px;color:#8a8f99;">Geben Sie entweder Frequenz oder Wellenlänge ein.</p>
+      <p class="hint-line">Geben Sie entweder Frequenz oder Wellenlänge ein.</p>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="wavelength">
@@ -414,54 +405,10 @@
   </div>
 </section>
 
-<!-- ====== dB Unit Converter ====== -->
-<section id="dbunit" class="card" data-group="db">
-  <div class="card-head">
-    <span class="tag">15</span>
-    <h2>dB-Einheiten-Konverter</h2>
-    <p>Wandelt zwischen dBµV, dBµA und dBm an einer Bezugsimpedanz um — für EMV-Emissionsmessungen.</p>
-  </div>
-  <div class="card-body">
-    <form class="inputs" data-form="dbunit">
-      <label>Wert
-        <input name="value" type="number" step="0.01" value="60" required>
-        <em>dB</em>
-      </label>
-      <label>Eingangseinheit
-        <select name="unit">
-          <option value="dbuv">dBµV</option>
-          <option value="dbua">dBµA</option>
-          <option value="dbm">dBm</option>
-          <option value="uv">µV (linear)</option>
-          <option value="ua">µA (linear)</option>
-          <option value="mw">mW (linear)</option>
-        </select>
-        <em></em>
-      </label>
-      <label>Bezugsimpedanz <span>Z</span>
-        <input name="z" type="number" step="0.1" value="50" required>
-        <em>Ω</em>
-      </label>
-      <button type="submit">Berechnen</button>
-    </form>
-    <div class="results" data-result="dbunit">
-      <div class="r-main"><span class="label">dBµV</span><span class="value">—</span></div>
-      <div class="r-grid">
-        <div><span class="label">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
-        <div><span class="label">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
-        <div><span class="label">Spannung</span><span class="value" data-key="uv">—</span><em>µV</em></div>
-        <div><span class="label">Strom</span><span class="value" data-key="ua">—</span><em>µA</em></div>
-        <div><span class="label">Leistung</span><span class="value" data-key="mw">—</span><em>mW</em></div>
-        <div><span class="label">Impedanz</span><span class="value" data-key="impedance">—</span><em>Ω</em></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ====== Coaxial Impedance ====== -->
-<section id="coax" class="card" data-group="cable">
+<section id="coax" class="card">
   <div class="card-head">
-    <span class="tag">08</span>
+    <span class="tag">11</span>
     <h2>Koaxiale Impedanz</h2>
     <p>Berechnet die charakteristische Impedanz eines Koaxialkabels aus D, d und εᵣ.</p>
   </div>
@@ -492,9 +439,9 @@
 </section>
 
 <!-- ====== Quarter-Wave Transformer ====== -->
-<section id="quarter" class="card" data-group="cable">
+<section id="quarter" class="card">
   <div class="card-head">
-    <span class="tag">09</span>
+    <span class="tag">12</span>
     <h2>Viertelwellen-Transformator</h2>
     <p>Berechnet die erforderliche Transformatorimpedanz für eine verlustfreie Anpassung.</p>
   </div>
@@ -530,9 +477,9 @@
 </section>
 
 <!-- ====== Attenuation ====== -->
-<section id="attenuation" class="card" data-group="cable">
+<section id="attenuation" class="card">
   <div class="card-head">
-    <span class="tag">10</span>
+    <span class="tag">13</span>
     <h2>Dämpfung</h2>
     <p>Rechnet Kabeldämpfung (dB/m) über eine bestimmte Länge in Nettoverlust um.</p>
   </div>
@@ -559,9 +506,9 @@
 </section>
 
 <!-- ====== Coaxial Loss Model ====== -->
-<section id="coaxloss" class="card" data-group="cable">
+<section id="coaxloss" class="card">
   <div class="card-head">
-    <span class="tag">11</span>
+    <span class="tag">14</span>
     <h2>Koax-Verlustmodell</h2>
     <p>Berechnet die Dämpfung eines Koaxialkabels aus Geometrie, Frequenz und Materialparametern.</p>
   </div>
@@ -605,9 +552,9 @@
 </section>
 
 <!-- ====== PCB Impedance ====== -->
-<section id="pcb" class="card" data-group="cable">
+<section id="pcb" class="card">
   <div class="card-head">
-    <span class="tag">12</span>
+    <span class="tag">15</span>
     <h2>PCB-Impedanz</h2>
     <p>Berechnet Single-Ended- und differentielle Impedanz einer Mikrostreifenleitung.</p>
   </div>
@@ -647,9 +594,9 @@
 </section>
 
 <!-- ====== LC Resonant Frequency ====== -->
-<section id="lcres" class="card" data-group="cable">
+<section id="lcres" class="card">
   <div class="card-head">
-    <span class="tag">20</span>
+    <span class="tag">16</span>
     <h2>LC-Resonanzfrequenz</h2>
     <p>Berechnet die Resonanzfrequenz, z.B. die Eigenresonanz eines Abblockkondensators.</p>
   </div>
@@ -677,9 +624,9 @@
 </section>
 
 <!-- ====== HF Bands / Antenne ====== -->
-<section id="hfband" class="card" data-group="hf">
+<section id="hfband" class="card">
   <div class="card-head">
-    <span class="tag">13</span>
+    <span class="tag">17</span>
     <h2>HF-Bänder & Antenne</h2>
     <p>Bestimmt HF-Band, λ/4 und λ/2 für eine eingegebene Frequenz.</p>
   </div>
@@ -704,9 +651,9 @@
 </section>
 
 <!-- ====== Electrical Length ====== -->
-<section id="electrical" class="card" data-group="hf">
+<section id="electrical" class="card">
   <div class="card-head">
-    <span class="tag">14</span>
+    <span class="tag">18</span>
     <h2>Elektrische Leitungslänge</h2>
     <p>Berechnet die physikalische Länge für eine gewünschte elektrische Phasenverschiebung oder umgekehrt.</p>
   </div>
@@ -728,7 +675,7 @@
         <input name="length_mm" type="number" step="0.1" value="">
         <em>mm</em>
       </label>
-      <p style="font-size:12px;color:#8a8f99;">Geben Sie entweder Grad oder Länge ein. Das jeweils andere Ergebnis wird berechnet.</p>
+      <p class="hint-line">Geben Sie entweder Grad oder Länge ein. Das jeweils andere Ergebnis wird berechnet.</p>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="electrical">
@@ -778,82 +725,42 @@ function clearError(panel) {
   if (err) err.classList.add("hidden");
 }
 
-const tabLinks = document.querySelectorAll("nav.group-nav a");
-const subNav = document.querySelector(".sub-nav");
-const cards = Array.from(document.querySelectorAll(".card[data-group]"));
-let activeGroup = "emv";
-let activeCardId = null;
+/* ===== Single-level tab navigation ===== */
+const tabNav = document.querySelector(".tab-nav");
+const cards = Array.from(document.querySelectorAll("section.card"));
 
-const groups = cards.reduce((acc, card) => {
-  const group = card.dataset.group;
-  if (!acc[group]) acc[group] = [];
-  acc[group].push(card);
-  return acc;
-}, {});
-
-cards.forEach(card => card.classList.add("hidden"));
-
-function updateCardVisibility() {
-  cards.forEach(card => {
-    if (card.dataset.group !== activeGroup) {
-      card.classList.add("hidden");
-      return;
-    }
-    card.classList.toggle("hidden", card.id !== activeCardId);
-  });
-}
-
-function setActiveCard(cardId) {
-  activeCardId = cardId;
-  updateCardVisibility();
-  subNav.querySelectorAll("button").forEach(btn => {
-    const isActive = btn.dataset.card === cardId;
+function setActiveCard(id) {
+  cards.forEach(c => c.classList.toggle("hidden", c.id !== id));
+  tabNav.querySelectorAll("button").forEach(btn => {
+    const isActive = btn.dataset.card === id;
     btn.classList.toggle("active", isActive);
     if (isActive) btn.scrollIntoView({inline: "nearest", block: "nearest"});
   });
 }
 
-function renderSubNav(group) {
-  const groupCards = groups[group] || [];
-  subNav.innerHTML = "";
-  if (groupCards.length <= 1) {
-    subNav.classList.add("hidden");
-  } else {
-    subNav.classList.remove("hidden");
-  }
-  groupCards.forEach(card => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "sub-tab";
-    btn.dataset.card = card.id;
-    btn.textContent = card.querySelector(".card-head h2").textContent;
-    btn.addEventListener("click", () => setActiveCard(card.id));
-    subNav.append(btn);
-  });
-  if (groupCards.length > 0) {
-    setActiveCard(groupCards[0].id);
-  }
-}
+cards.forEach(card => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.dataset.card = card.id;
+  btn.textContent = card.querySelector(".card-head h2").textContent;
+  btn.addEventListener("click", () => setActiveCard(card.id));
+  tabNav.append(btn);
+});
+if (cards.length) setActiveCard(cards[0].id);
 
-function switchGroup(group) {
-  activeGroup = group;
-  tabLinks.forEach(link => {
-    const isActive = link.dataset.tab === group;
-    link.classList.toggle("active", isActive);
-    if (isActive) link.scrollIntoView({inline: "nearest", block: "nearest"});
-  });
-  renderSubNav(group);
-}
-
-switchGroup(activeGroup);
-
-tabLinks.forEach(link => {
-  link.addEventListener("click", e => {
-    e.preventDefault();
-    switchGroup(link.dataset.tab);
-  });
+/* ===== dB converter: show fields for the selected mode ===== */
+document.querySelectorAll("[data-db-mode]").forEach(sel => {
+  const card = sel.closest(".card");
+  const sync = () => {
+    card.querySelectorAll("[data-db-fields]").forEach(el => {
+      el.classList.toggle("hidden", el.dataset.dbFields !== sel.value);
+    });
+  };
+  sel.addEventListener("change", sync);
+  sync();
 });
 
+/* ===== Form submission ===== */
 document.querySelectorAll("form[data-form]").forEach(form => {
   form.addEventListener("submit", async e => {
     e.preventDefault();
