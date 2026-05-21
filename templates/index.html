@@ -7,18 +7,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=8">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=9">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("emc-theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  })();
+</script>
 </head>
 <body>
 
 <header class="masthead">
   <div class="masthead-inner">
-    <div class="brand">
-      <span class="brand-mark">⌬</span>
-      <div>
-        <h1>EMC Tools</h1>
-        <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
+    <div class="masthead-top">
+      <button class="back-btn" type="button" aria-label="Zurück zur Übersicht">‹ Übersicht</button>
+      <div class="brand">
+        <span class="brand-mark">⌬</span>
+        <div>
+          <h1>EMC Tools</h1>
+          <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
+        </div>
       </div>
+      <button class="theme-toggle" type="button" aria-label="Design wechseln">☀</button>
     </div>
     <nav class="tab-nav" aria-label="Rechner"></nav>
   </div>
@@ -824,17 +836,27 @@ function clearError(panel) {
   if (err) err.classList.add("hidden");
 }
 
-/* ===== Single-level tab navigation ===== */
+/* ===== Navigation: tile menu (mobile) / tab bar (desktop) ===== */
 const tabNav = document.querySelector(".tab-nav");
 const cards = Array.from(document.querySelectorAll("section.card"));
+const backBtn = document.querySelector(".back-btn");
 
-function setActiveCard(id) {
+function showCard(id) {
   cards.forEach(c => c.classList.toggle("hidden", c.id !== id));
   tabNav.querySelectorAll("button").forEach(btn => {
-    const isActive = btn.dataset.card === id;
-    btn.classList.toggle("active", isActive);
-    if (isActive) btn.scrollIntoView({inline: "nearest", block: "nearest"});
+    btn.classList.toggle("active", btn.dataset.card === id);
   });
+}
+
+function openCard(id) {
+  showCard(id);
+  document.body.dataset.view = "detail";
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  document.body.dataset.view = "home";
+  window.scrollTo(0, 0);
 }
 
 cards.forEach(card => {
@@ -842,10 +864,26 @@ cards.forEach(card => {
   btn.type = "button";
   btn.dataset.card = card.id;
   btn.textContent = card.querySelector(".card-head h2").textContent;
-  btn.addEventListener("click", () => setActiveCard(card.id));
+  btn.addEventListener("click", () => openCard(card.id));
   tabNav.append(btn);
 });
-if (cards.length) setActiveCard(cards[0].id);
+if (cards.length) showCard(cards[0].id);
+document.body.dataset.view = "home";
+backBtn.addEventListener("click", goHome);
+
+/* ===== Theme toggle ===== */
+const themeToggle = document.querySelector(".theme-toggle");
+function syncThemeIcon() {
+  themeToggle.textContent = document.documentElement.dataset.theme === "light" ? "☾" : "☀";
+}
+syncThemeIcon();
+themeToggle.addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("emc-theme", next); } catch (e) {}
+  syncThemeIcon();
+  document.querySelectorAll("form[data-graph]").forEach(f => f.requestSubmit());
+});
 
 /* ===== dB converter: show fields for the selected mode ===== */
 document.querySelectorAll("[data-db-mode]").forEach(sel => {
@@ -901,8 +939,21 @@ function setReadout(canvas, text) {
   canvas.parentElement.querySelector(".graph-readout").textContent = text;
 }
 
+function themeColors() {
+  const s = getComputedStyle(document.documentElement);
+  return {
+    grid: s.getPropertyValue("--border").trim(),
+    accent: s.getPropertyValue("--accent").trim(),
+    dim: s.getPropertyValue("--text-dim").trim(),
+    faint: s.getPropertyValue("--text-faint").trim(),
+    warn: s.getPropertyValue("--warn").trim(),
+    bg: s.getPropertyValue("--bg-input").trim(),
+  };
+}
+
 function drawSweep(canvas, result) {
   const ctx = canvas.getContext("2d");
+  const c = themeColors();
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
   const pad = {l: 54, r: 14, t: 22, b: 38};
@@ -915,7 +966,7 @@ function drawSweep(canvas, result) {
   const X = f => pad.l + (Math.log10(f) - lx0) / (lx1 - lx0) * pw;
   const Y = v => pad.t + ph - v / ymax * ph;
 
-  ctx.strokeStyle = "#2a2d33"; ctx.fillStyle = "#8a8f99";
+  ctx.strokeStyle = c.grid; ctx.fillStyle = c.dim;
   ctx.font = "10px monospace"; ctx.lineWidth = 1;
   for (let d = Math.ceil(lx0); d <= Math.floor(lx1); d++) {
     const dv = Math.pow(10, d), x = X(dv);
@@ -939,26 +990,27 @@ function drawSweep(canvas, result) {
     });
     ctx.stroke();
   };
-  line("cond", "#8a8f99", 1.5);
-  line("diel", "#555a63", 1.5);
-  line("total", "#d4ff3f", 2);
+  line("cond", c.dim, 1.5);
+  line("diel", c.faint, 1.5);
+  line("total", c.accent, 2);
 
   ctx.textAlign = "left";
-  [["Gesamt", "#d4ff3f"], ["Leiter", "#8a8f99"], ["Dielektr.", "#555a63"]].forEach((L, i) => {
+  [["Gesamt", c.accent], ["Leiter", c.dim], ["Dielektr.", c.faint]].forEach((L, i) => {
     ctx.fillStyle = L[1]; ctx.fillRect(pad.l + 6 + i * 96, pad.t - 12, 12, 3);
-    ctx.fillStyle = "#8a8f99"; ctx.fillText(L[0], pad.l + 22 + i * 96, pad.t - 8);
+    ctx.fillStyle = c.dim; ctx.fillText(L[0], pad.l + 22 + i * 96, pad.t - 8);
   });
   setReadout(canvas, `Z₀ ≈ ${result.z0} Ω · Dämpfung in dB/m`);
 }
 
 function drawSmith(canvas, result) {
   const ctx = canvas.getContext("2d");
+  const c = themeColors();
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 14;
   const PX = g => cx + g * R, PY = g => cy - g * R;
 
-  ctx.strokeStyle = "#2a2d33"; ctx.lineWidth = 1;
+  ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.stroke();
 
@@ -977,14 +1029,14 @@ function drawSmith(canvas, result) {
   });
   ctx.restore();
 
-  ctx.strokeStyle = "#ff7849"; ctx.setLineDash([4, 3]);
+  ctx.strokeStyle = c.warn; ctx.setLineDash([4, 3]);
   ctx.beginPath(); ctx.arc(cx, cy, result.gamma_mag * R, 0, 2 * Math.PI); ctx.stroke();
   ctx.setLineDash([]);
 
   const px = PX(result.gamma_re), py = PY(result.gamma_im);
-  ctx.fillStyle = "#d4ff3f";
+  ctx.fillStyle = c.accent;
   ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fill();
-  ctx.strokeStyle = "#0a0b0d"; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.strokeStyle = c.bg; ctx.lineWidth = 1.5; ctx.stroke();
 
   const sign = result.gamma_im >= 0 ? "+" : "−";
   setReadout(canvas, `Γ = ${result.gamma_re} ${sign} j${Math.abs(result.gamma_im)} · |Γ| = ${result.gamma_mag} · VSWR = ${result.vswr ?? "∞"} · RL = ${result.return_loss ?? "0"} dB`);
@@ -992,11 +1044,12 @@ function drawSmith(canvas, result) {
 
 function drawPattern(canvas, result) {
   const ctx = canvas.getContext("2d");
+  const c = themeColors();
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 20;
 
-  ctx.strokeStyle = "#2a2d33"; ctx.lineWidth = 1;
+  ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
   [0.25, 0.5, 0.75, 1].forEach(f => {
     ctx.beginPath(); ctx.arc(cx, cy, f * R, 0, 2 * Math.PI); ctx.stroke();
   });
@@ -1006,7 +1059,7 @@ function drawPattern(canvas, result) {
     ctx.lineTo(cx + R * Math.cos(t), cy + R * Math.sin(t)); ctx.stroke();
   }
 
-  ctx.strokeStyle = "#d4ff3f"; ctx.fillStyle = "rgba(212,255,63,0.12)"; ctx.lineWidth = 2;
+  ctx.strokeStyle = c.accent; ctx.fillStyle = c.accent; ctx.lineWidth = 2;
   ctx.beginPath();
   result.points.forEach((p, i) => {
     const t = (p.angle - 90) * Math.PI / 180;
@@ -1014,7 +1067,9 @@ function drawPattern(canvas, result) {
     const x = cx + r * Math.cos(t), y = cy + r * Math.sin(t);
     i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
   });
-  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.closePath();
+  ctx.globalAlpha = 0.13; ctx.fill(); ctx.globalAlpha = 1;
+  ctx.stroke();
 
   setReadout(canvas, result.hpbw != null
     ? `Halbwertsbreite (HPBW) ≈ ${result.hpbw}°`
