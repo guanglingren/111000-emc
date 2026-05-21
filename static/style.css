@@ -169,21 +169,45 @@ nav a:hover {
 }
 
 @media (max-width: 920px) {
+  .masthead {
+    padding: 14px 0;
+  }
+
   .masthead-inner {
     flex-direction: column;
     align-items: stretch;
+    gap: 0;
   }
 
+  /* Single-row, horizontally scrollable nav keeps the sticky header compact */
   .group-nav,
   .sub-nav {
-    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 8px;
+  }
+
+  .group-nav::-webkit-scrollbar,
+  .sub-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .group-nav {
+    margin-top: 12px;
+  }
+
+  .sub-nav {
+    margin-top: 10px;
+    padding-top: 12px;
   }
 
   .group-nav a,
   .sub-nav button {
-    flex: 1 1 auto;
-    min-width: 120px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-width: 0;
     font-size: 11px;
     padding: 8px 14px;
   }
@@ -207,14 +231,20 @@ nav a:hover {
 }
 
 @media (max-width: 720px) {
-  .group-nav a,
-  .sub-nav button {
-    flex: 1 1 100%;
-    min-width: 0;
-  }
-
   main {
     padding: 18px 12px;
+  }
+
+  .brand-mark {
+    font-size: 26px;
+  }
+
+  .brand h1 {
+    font-size: 19px;
+  }
+
+  .r-main .value {
+    font-size: 34px;
   }
 }
 
@@ -410,6 +440,21 @@ button[type="submit"]:disabled {
 
 .results.flash {
   background: rgba(212, 255, 63, 0.04);
+}
+
+.r-error {
+  border: 1px solid var(--warn);
+  border-left: 3px solid var(--warn);
+  color: var(--warn);
+  background: rgba(255, 120, 73, 0.08);
+  padding: 8px 12px;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.r-error.hidden {
+  display: none;
 }
 
 .r-main {

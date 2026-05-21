@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=4">
 </head>
 <body>
 
@@ -134,6 +134,148 @@
         <div><span class="label">Reflexion R</span><span class="value" data-key="reflection">—</span><em>dB</em></div>
         <div><span class="label">Mehrfachreflexion B</span><span class="value" data-key="multi_refl">—</span><em>dB</em></div>
         <div><span class="label">Hauttiefe δ</span><span class="value" data-key="skin_depth_um">—</span><em>μm</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Magnetic Field Units ====== -->
+<section id="magfield" class="card" data-group="emv">
+  <div class="card-head">
+    <span class="tag">16</span>
+    <h2>Magnetfeld-Einheiten</h2>
+    <p>Wandelt zwischen Flussdichte (T, Gauss, dBpT) und Feldstärke (A/m, Oe, dBµA/m) um — Annahme Luft, B = µ₀·H.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="magfield">
+      <label>Wert
+        <input name="value" type="number" step="any" value="1" required>
+        <em></em>
+      </label>
+      <label>Eingangseinheit
+        <select name="unit">
+          <option value="ut">µT</option>
+          <option value="t">T</option>
+          <option value="mt">mT</option>
+          <option value="nt">nT</option>
+          <option value="g">Gauss</option>
+          <option value="mg">mGauss</option>
+          <option value="am">A/m</option>
+          <option value="oe">Oersted</option>
+          <option value="dbpt">dBpT</option>
+          <option value="dbuam">dBµA/m</option>
+        </select>
+        <em></em>
+      </label>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="magfield">
+      <div class="r-main"><span class="label">µT</span><span class="value">—</span></div>
+      <div class="r-grid">
+        <div><span class="label">Flussdichte</span><span class="value" data-key="tesla">—</span><em>T</em></div>
+        <div><span class="label">Gauss</span><span class="value" data-key="gauss">—</span><em>G</em></div>
+        <div><span class="label">Feldstärke</span><span class="value" data-key="am">—</span><em>A/m</em></div>
+        <div><span class="label">Oersted</span><span class="value" data-key="oersted">—</span><em>Oe</em></div>
+        <div><span class="label">dBpT</span><span class="value" data-key="dbpt">—</span><em>dBpT</em></div>
+        <div><span class="label">dBµA/m</span><span class="value" data-key="dbuam">—</span><em>dBµA/m</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Skin Depth ====== -->
+<section id="skindepth" class="card" data-group="emv">
+  <div class="card-head">
+    <span class="tag">17</span>
+    <h2>Hauttiefe (Skin-Effekt)</h2>
+    <p>Berechnet Eindringtiefe und Oberflächenwiderstand eines Leiters bei hoher Frequenz.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="skindepth">
+      <label>Frequenz
+        <input name="freq" type="number" step="0.01" value="100" required>
+        <em>MHz</em>
+      </label>
+      <label>σᵣ <span>(rel. Cu)</span>
+        <input name="sigma_r" type="number" step="0.01" value="1.0" required>
+        <em></em>
+      </label>
+      <label>μᵣ
+        <input name="mu_r" type="number" step="0.1" value="1.0" required>
+        <em></em>
+      </label>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="skindepth">
+      <div class="r-main"><span class="label">Hauttiefe δ</span><span class="value" data-key="skin_depth_um">—</span><span class="unit">µm</span></div>
+      <div class="r-grid">
+        <div><span class="label">Hauttiefe</span><span class="value" data-key="skin_depth_mm">—</span><em>mm</em></div>
+        <div><span class="label">Oberflächenwiderstand</span><span class="value" data-key="surface_resistance_mohm">—</span><em>mΩ/□</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Rise Time / Bandwidth ====== -->
+<section id="risetime" class="card" data-group="emv">
+  <div class="card-head">
+    <span class="tag">18</span>
+    <h2>Anstiegszeit / Bandbreite</h2>
+    <p>Verknüpft Signalanstiegszeit, 3-dB-Bandbreite und Knickfrequenz für EMV-Abschätzungen.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="risetime">
+      <label>Anstiegszeit
+        <input name="rise_time" type="number" step="0.001" value="1" placeholder="ns">
+        <em>ns</em>
+      </label>
+      <label>Bandbreite
+        <input name="bandwidth" type="number" step="0.01" value="" placeholder="MHz">
+        <em>MHz</em>
+      </label>
+      <p style="font-size:12px;color:#8a8f99;">Geben Sie entweder Anstiegszeit oder Bandbreite ein.</p>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="risetime">
+      <div class="r-main"><span class="label">Bandbreite</span><span class="value" data-key="bandwidth_mhz">—</span><span class="unit">MHz</span></div>
+      <div class="r-grid">
+        <div><span class="label">Anstiegszeit</span><span class="value" data-key="rise_time_ns">—</span><em>ns</em></div>
+        <div><span class="label">Knickfrequenz</span><span class="value" data-key="knee_freq_mhz">—</span><em>MHz</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Field Strength / Power Density ====== -->
+<section id="fieldstrength" class="card" data-group="emv">
+  <div class="card-head">
+    <span class="tag">19</span>
+    <h2>Feldstärke / Leistungsdichte</h2>
+    <p>Berechnet die Fernfeld-Feldstärke und Leistungsdichte eines Strahlers in gegebenem Abstand.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="fieldstrength">
+      <label>Sendeleistung
+        <input name="power" type="number" step="0.01" value="1" required>
+        <em>W</em>
+      </label>
+      <label>Antennengewinn
+        <input name="gain" type="number" step="0.1" value="0">
+        <em>dBi</em>
+      </label>
+      <label>Abstand
+        <input name="distance" type="number" step="0.01" value="3" required>
+        <em>m</em>
+      </label>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="fieldstrength">
+      <div class="r-main"><span class="label">E-Feld</span><span class="value" data-key="e_field_vm">—</span><span class="unit">V/m</span></div>
+      <div class="r-grid">
+        <div><span class="label">E-Feld</span><span class="value" data-key="e_field_dbuvm">—</span><em>dBµV/m</em></div>
+        <div><span class="label">EIRP</span><span class="value" data-key="eirp_w">—</span><em>W</em></div>
+        <div><span class="label">Leistungsdichte</span><span class="value" data-key="power_density_wm2">—</span><em>W/m²</em></div>
+        <div><span class="label">Leistungsdichte</span><span class="value" data-key="power_density_mwcm2">—</span><em>mW/cm²</em></div>
       </div>
     </div>
   </div>
@@ -272,6 +414,50 @@
   </div>
 </section>
 
+<!-- ====== dB Unit Converter ====== -->
+<section id="dbunit" class="card" data-group="db">
+  <div class="card-head">
+    <span class="tag">15</span>
+    <h2>dB-Einheiten-Konverter</h2>
+    <p>Wandelt zwischen dBµV, dBµA und dBm an einer Bezugsimpedanz um — für EMV-Emissionsmessungen.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="dbunit">
+      <label>Wert
+        <input name="value" type="number" step="0.01" value="60" required>
+        <em>dB</em>
+      </label>
+      <label>Eingangseinheit
+        <select name="unit">
+          <option value="dbuv">dBµV</option>
+          <option value="dbua">dBµA</option>
+          <option value="dbm">dBm</option>
+          <option value="uv">µV (linear)</option>
+          <option value="ua">µA (linear)</option>
+          <option value="mw">mW (linear)</option>
+        </select>
+        <em></em>
+      </label>
+      <label>Bezugsimpedanz <span>Z</span>
+        <input name="z" type="number" step="0.1" value="50" required>
+        <em>Ω</em>
+      </label>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="dbunit">
+      <div class="r-main"><span class="label">dBµV</span><span class="value">—</span></div>
+      <div class="r-grid">
+        <div><span class="label">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
+        <div><span class="label">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
+        <div><span class="label">Spannung</span><span class="value" data-key="uv">—</span><em>µV</em></div>
+        <div><span class="label">Strom</span><span class="value" data-key="ua">—</span><em>µA</em></div>
+        <div><span class="label">Leistung</span><span class="value" data-key="mw">—</span><em>mW</em></div>
+        <div><span class="label">Impedanz</span><span class="value" data-key="impedance">—</span><em>Ω</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ====== Coaxial Impedance ====== -->
 <section id="coax" class="card" data-group="cable">
   <div class="card-head">
@@ -326,13 +512,18 @@
         <input name="freq" type="number" step="0.01" value="100">
         <em>MHz</em>
       </label>
+      <label>Geschwindigkeitsfaktor <span>vf</span>
+        <input name="vf" type="number" step="0.001" value="1">
+        <em></em>
+      </label>
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="quarter">
       <div class="r-main"><span class="label">Z₀, Transformer</span><span class="value" data-key="z0">—</span><span class="unit">Ω</span></div>
       <div class="r-grid">
         <div><span class="label">Frequenz</span><span class="value" data-key="frequency_mhz">—</span><em>MHz</em></div>
-        <div><span class="label">Länge</span><span class="value" data-key="length_m">—</span><em>m</em></div>
+        <div><span class="label">vf</span><span class="value" data-key="velocity_factor">—</span></div>
+        <div><span class="label">Länge λ/4</span><span class="value" data-key="length_m">—</span><em>m</em></div>
       </div>
     </div>
   </div>
@@ -455,6 +646,36 @@
   </div>
 </section>
 
+<!-- ====== LC Resonant Frequency ====== -->
+<section id="lcres" class="card" data-group="cable">
+  <div class="card-head">
+    <span class="tag">20</span>
+    <h2>LC-Resonanzfrequenz</h2>
+    <p>Berechnet die Resonanzfrequenz, z.B. die Eigenresonanz eines Abblockkondensators.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="lcres">
+      <label>Induktivität <span>L</span>
+        <input name="l" type="number" step="0.001" value="1" required>
+        <em>nH</em>
+      </label>
+      <label>Kapazität <span>C</span>
+        <input name="c" type="number" step="0.001" value="100" required>
+        <em>pF</em>
+      </label>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="lcres">
+      <div class="r-main"><span class="label">Resonanzfrequenz</span><span class="value" data-key="frequency_mhz">—</span><span class="unit">MHz</span></div>
+      <div class="r-grid">
+        <div><span class="label">Kennimpedanz √(L/C)</span><span class="value" data-key="char_impedance">—</span><em>Ω</em></div>
+        <div><span class="label">L</span><span class="value" data-key="l_nh">—</span><em>nH</em></div>
+        <div><span class="label">C</span><span class="value" data-key="c_pf">—</span><em>pF</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ====== HF Bands / Antenne ====== -->
 <section id="hfband" class="card" data-group="hf">
   <div class="card-head">
@@ -540,6 +761,23 @@ async function postJSON(url, payload) {
   return r.json();
 }
 
+function showError(panel, msg) {
+  let err = panel.querySelector(".r-error");
+  if (!err) {
+    err = document.createElement("div");
+    err.className = "r-error";
+    panel.prepend(err);
+  }
+  err.textContent = msg;
+  err.classList.remove("hidden");
+  panel.querySelector(".r-main .value").textContent = "—";
+}
+
+function clearError(panel) {
+  const err = panel.querySelector(".r-error");
+  if (err) err.classList.add("hidden");
+}
+
 const tabLinks = document.querySelectorAll("nav.group-nav a");
 const subNav = document.querySelector(".sub-nav");
 const cards = Array.from(document.querySelectorAll(".card[data-group]"));
@@ -569,7 +807,9 @@ function setActiveCard(cardId) {
   activeCardId = cardId;
   updateCardVisibility();
   subNav.querySelectorAll("button").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.card === cardId);
+    const isActive = btn.dataset.card === cardId;
+    btn.classList.toggle("active", isActive);
+    if (isActive) btn.scrollIntoView({inline: "nearest", block: "nearest"});
   });
 }
 
@@ -598,7 +838,9 @@ function renderSubNav(group) {
 function switchGroup(group) {
   activeGroup = group;
   tabLinks.forEach(link => {
-    link.classList.toggle("active", link.dataset.tab === group);
+    const isActive = link.dataset.tab === group;
+    link.classList.toggle("active", isActive);
+    if (isActive) link.scrollIntoView({inline: "nearest", block: "nearest"});
   });
   renderSubNav(group);
 }
@@ -620,13 +862,13 @@ document.querySelectorAll("form[data-form]").forEach(form => {
     const btn = form.querySelector("button");
     btn.disabled = true; btn.textContent = "···";
 
+    const panel = document.querySelector(`[data-result="${name}"]`);
     try {
       const result = await postJSON(`/api/${name}`, data);
-      const panel = document.querySelector(`[data-result="${name}"]`);
       if (result.error) {
-        panel.querySelector(".r-main .value").textContent = "ERR";
-        console.error(result.error);
+        showError(panel, result.error);
       } else {
+        clearError(panel);
         const mainKey = name === "electrical"
           ? (data.degrees ? "length_mm" : "degrees")
           : Object.keys(result)[0];
@@ -640,6 +882,7 @@ document.querySelectorAll("form[data-form]").forEach(form => {
         setTimeout(() => panel.classList.remove("flash"), 400);
       }
     } catch (err) {
+      showError(panel, "Netzwerkfehler — bitte erneut versuchen.");
       console.error(err);
     } finally {
       btn.disabled = false; btn.textContent = "Berechnen";

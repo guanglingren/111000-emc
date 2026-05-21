@@ -19,6 +19,12 @@ Built with Flask. Designed to deploy on Render's free tier.
 12. **PCB Impedance Calculator** — computes single-ended microstrip impedance and differential impedance for paired traces.
 13. **HF Band & Antenna Formulas** — identifies the HF amateur band and computes λ/4 and λ/2 antenna lengths.
 14. **Electrical Length Calculator** — converts electrical degrees to physical line length and vice versa for a given frequency and velocity factor.
+15. **dB Unit Converter** — converts between dBµV, dBµA, dBm and their linear values (µV, µA, mW) at a chosen reference impedance.
+16. **Magnetic Field Units** — converts between flux density (T, Gauss, dBpT) and field strength (A/m, Oersted, dBµA/m), assuming air (B = µ₀·H).
+17. **Skin Depth** — computes the skin-effect penetration depth and surface resistance of a conductor at high frequency.
+18. **Rise Time / Bandwidth** — relates signal rise time, 3 dB bandwidth and knee frequency for EMC estimates.
+19. **Field Strength / Power Density** — far-field E-field and power density of a radiator at a given distance.
+20. **LC Resonant Frequency** — resonant frequency and characteristic impedance of an LC pair, e.g. decoupling-capacitor self-resonance.
 
 ## Run locally
 

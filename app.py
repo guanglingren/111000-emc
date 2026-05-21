@@ -253,6 +253,107 @@ def api_power():
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 
+@app.route("/api/dbunit", methods=["POST"])
+def api_dbunit():
+    """
+    dB-Einheiten-Konverter: dBµV, dBµA, dBm und ihre Linearwerte (µV, µA, mW).
+    Eingaben: value, unit, z (Bezugsimpedanz in Ohm).
+    """
+    try:
+        data = request.get_json()
+        value = float(data["value"])
+        unit = data.get("unit", "dbuv")
+        z = float(data.get("z") or 50)
+
+        if z <= 0:
+            return jsonify({"error": "Bezugsimpedanz muss positiv sein."}), 400
+
+        if unit in ("uv", "ua", "mw") and value <= 0:
+            return jsonify({"error": "Linearwerte müssen positiv sein."}), 400
+
+        if unit == "dbm":
+            p_w = 10 ** (value / 10) / 1000
+        elif unit == "mw":
+            p_w = value / 1000
+        elif unit == "dbuv":
+            volt = 10 ** (value / 20) * 1e-6
+            p_w = volt**2 / z
+        elif unit == "uv":
+            p_w = (value * 1e-6) ** 2 / z
+        elif unit == "dbua":
+            amp = 10 ** (value / 20) * 1e-6
+            p_w = amp**2 * z
+        elif unit == "ua":
+            p_w = (value * 1e-6) ** 2 * z
+        else:
+            return jsonify({"error": "Ungültige Einheit."}), 400
+
+        volt = math.sqrt(p_w * z)
+        amp = math.sqrt(p_w / z)
+
+        return jsonify({
+            "dbuv": round(20 * math.log10(volt / 1e-6), 2),
+            "dbua": round(20 * math.log10(amp / 1e-6), 2),
+            "dbm": round(10 * math.log10(p_w * 1000), 2),
+            "uv": round(volt / 1e-6, 4),
+            "ua": round(amp / 1e-6, 4),
+            "mw": round(p_w * 1000, 6),
+            "impedance": round(z, 2),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/magfield", methods=["POST"])
+def api_magfield():
+    """
+    Magnetfeld-Einheiten-Konverter (Annahme Luft/Vakuum, B = µ0·H).
+    Flussdichte: T, mT, µT, nT, Gauss, mGauss, dBpT.
+    Feldstärke: A/m, Oersted, dBµA/m.
+    Eingaben: value, unit.
+    """
+    try:
+        data = request.get_json()
+        value = float(data["value"])
+        unit = data.get("unit", "ut")
+
+        if value <= 0:
+            return jsonify({"error": "Feldwert muss positiv sein."}), 400
+
+        # Convert input to magnetic flux density B in tesla
+        to_tesla = {
+            "t": 1.0, "mt": 1e-3, "ut": 1e-6, "nt": 1e-9,
+            "g": 1e-4, "mg": 1e-7, "oe": 1e-4,
+        }
+        if unit in to_tesla:
+            b = value * to_tesla[unit]
+        elif unit == "am":          # A/m -> B = µ0·H
+            b = MU0 * value
+        elif unit == "dbpt":        # dB picotesla
+            b = 10 ** (value / 20) * 1e-12
+        elif unit == "dbuam":       # dBµA/m
+            b = MU0 * (10 ** (value / 20) * 1e-6)
+        else:
+            return jsonify({"error": "Ungültige Einheit."}), 400
+
+        h = b / MU0  # A/m
+
+        return jsonify({
+            "microtesla": round(b * 1e6, 6),
+            "tesla": round(b, 12),
+            "millitesla": round(b * 1e3, 9),
+            "nanotesla": round(b * 1e9, 4),
+            "gauss": round(b * 1e4, 8),
+            "milligauss": round(b * 1e7, 4),
+            "oersted": round(b * 1e4, 8),
+            "am": round(h, 6),
+            "dbpt": round(20 * math.log10(b / 1e-12), 2),
+            "dbuam": round(20 * math.log10(h / 1e-6), 2),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
 @app.route("/api/vswr", methods=["POST"])
 def api_vswr():
     """
@@ -400,19 +501,23 @@ def api_quarter():
         zs = float(data["zs"])
         zl = float(data["zl"])
         freq_mhz = float(data.get("freq") or 0)
+        vf = float(data.get("vf") or 1)
 
         if zs <= 0 or zl <= 0:
             return jsonify({"error": "Zs und Zl müssen positiv sein."}), 400
+        if vf <= 0 or vf > 1:
+            return jsonify({"error": "Geschwindigkeitsfaktor muss im Bereich 0..1 liegen."}), 400
 
         z0 = math.sqrt(zs * zl)
         length_m = None
         if freq_mhz > 0:
             wavelength = C0 / (freq_mhz * 1e6)
-            length_m = wavelength / 4
+            length_m = wavelength * vf / 4
 
         return jsonify({
             "z0": round(z0, 2),
             "frequency_mhz": round(freq_mhz, 4) if freq_mhz > 0 else None,
+            "velocity_factor": round(vf, 4),
             "length_m": round(length_m, 4) if length_m is not None else None,
         })
     except (KeyError, ValueError, TypeError) as e:
@@ -470,7 +575,9 @@ def api_coaxloss():
         d_m = d / 1000
         z0 = 60.0 / math.sqrt(er) * math.log(D_m / d_m)
         rs = math.sqrt(math.pi * freq_hz * MU0 / sigma)
-        alpha_c = 8.686 * (rs / z0) * (1 + 1 / er) / 2
+        r_in = d_m / 2
+        r_out = D_m / 2
+        alpha_c = 8.686 * rs / (4 * math.pi * z0) * (1 / r_in + 1 / r_out)
         alpha_d = 8.686 * math.pi * freq_hz * math.sqrt(MU0 * EPS0 * er) * tan_delta
         alpha_total = alpha_c + alpha_d
 
@@ -543,6 +650,134 @@ def api_hfband():
         })
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+@app.route("/api/skindepth", methods=["POST"])
+def api_skindepth():
+    """
+    Hauttiefe (Skin-Effekt) und Oberflächenwiderstand eines Leiters.
+    Eingaben: freq (MHz), sigma_r (rel. Cu), mu_r.
+    """
+    try:
+        data = request.get_json()
+        freq_mhz = float(data["freq"])
+        sigma_r = float(data["sigma_r"])
+        mu_r = float(data["mu_r"])
+
+        if freq_mhz <= 0 or sigma_r <= 0 or mu_r <= 0:
+            return jsonify({"error": "Alle Eingaben müssen positiv sein."}), 400
+
+        freq_hz = freq_mhz * 1e6
+        sigma = sigma_r * 5.8e7
+        mu = mu_r * MU0
+        omega = 2 * math.pi * freq_hz
+
+        skin = math.sqrt(2 / (omega * mu * sigma))
+        rs = 1 / (sigma * skin)  # surface resistance, Ohm/square
+
+        return jsonify({
+            "skin_depth_um": round(skin * 1e6, 4),
+            "skin_depth_mm": round(skin * 1e3, 6),
+            "surface_resistance_mohm": round(rs * 1000, 4),
+            "frequency_mhz": round(freq_mhz, 4),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/risetime", methods=["POST"])
+def api_risetime():
+    """
+    Anstiegszeit <-> Bandbreite für Signalintegrität / EMV.
+    Eingaben: rise_time (ns) oder bandwidth (MHz).
+    """
+    try:
+        data = request.get_json()
+        tr_raw = data.get("rise_time")
+        bw_raw = data.get("bandwidth")
+
+        if tr_raw not in (None, ""):
+            tr_ns = float(tr_raw)
+            if tr_ns <= 0:
+                return jsonify({"error": "Anstiegszeit muss positiv sein."}), 400
+            bw_mhz = 350.0 / tr_ns  # 0.35 / tr
+        elif bw_raw not in (None, ""):
+            bw_mhz = float(bw_raw)
+            if bw_mhz <= 0:
+                return jsonify({"error": "Bandbreite muss positiv sein."}), 400
+            tr_ns = 350.0 / bw_mhz
+        else:
+            return jsonify({"error": "Bitte Anstiegszeit oder Bandbreite eingeben."}), 400
+
+        knee_mhz = 500.0 / tr_ns  # 0.5 / tr — Knickfrequenz
+
+        return jsonify({
+            "bandwidth_mhz": round(bw_mhz, 3),
+            "rise_time_ns": round(tr_ns, 4),
+            "knee_freq_mhz": round(knee_mhz, 3),
+        })
+    except (ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/lcres", methods=["POST"])
+def api_lcres():
+    """
+    LC-Resonanzfrequenz, z.B. Eigenresonanz eines Abblockkondensators.
+    Eingaben: l (nH), c (pF).
+    """
+    try:
+        data = request.get_json()
+        l_nh = float(data["l"])
+        c_pf = float(data["c"])
+
+        if l_nh <= 0 or c_pf <= 0:
+            return jsonify({"error": "L und C müssen positiv sein."}), 400
+
+        l = l_nh * 1e-9
+        c = c_pf * 1e-12
+        f_hz = 1 / (2 * math.pi * math.sqrt(l * c))
+        z_char = math.sqrt(l / c)
+
+        return jsonify({
+            "frequency_mhz": round(f_hz / 1e6, 4),
+            "char_impedance": round(z_char, 3),
+            "l_nh": round(l_nh, 4),
+            "c_pf": round(c_pf, 4),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/fieldstrength", methods=["POST"])
+def api_fieldstrength():
+    """
+    Fernfeld-Feldstärke und Leistungsdichte eines Strahlers.
+    Eingaben: power (W), gain (dBi), distance (m).
+    """
+    try:
+        data = request.get_json()
+        power_w = float(data["power"])
+        gain_dbi = float(data.get("gain") or 0)
+        distance = float(data["distance"])
+
+        if power_w <= 0 or distance <= 0:
+            return jsonify({"error": "Leistung und Abstand müssen positiv sein."}), 400
+
+        eirp = power_w * 10 ** (gain_dbi / 10)
+        e_field = math.sqrt(30 * eirp) / distance  # V/m
+        power_density = eirp / (4 * math.pi * distance**2)  # W/m^2
+        e_dbuvm = 20 * math.log10(e_field / 1e-6)
+
+        return jsonify({
+            "e_field_vm": round(e_field, 4),
+            "e_field_dbuvm": round(e_dbuvm, 2),
+            "power_density_wm2": round(power_density, 6),
+            "power_density_mwcm2": round(power_density * 0.1, 6),
+            "eirp_w": round(eirp, 4),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
