@@ -735,5 +735,130 @@ def api_fieldstrength():
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 
+@app.route("/api/sweep", methods=["POST"])
+def api_sweep():
+    """
+    Koaxialkabel-Dämpfung über die Frequenz (log-skalierter Sweep).
+    Eingaben: f_start, f_stop (MHz), D, d (mm), er, tan_delta, sigma.
+    """
+    try:
+        data = request.get_json()
+        f_start = float(data["f_start"])
+        f_stop = float(data["f_stop"])
+        D = float(data["D"])
+        d = float(data["d"])
+        er = float(data["er"])
+        tan_delta = float(data.get("tan_delta") or 0)
+        sigma = float(data.get("sigma") or 5.8e7)
+
+        if f_start <= 0 or f_stop <= f_start or D <= d or d <= 0 or er <= 0 or sigma <= 0:
+            return jsonify({"error": "Ungültiger Frequenzbereich oder Geometrie."}), 400
+
+        D_m = D / 1000
+        d_m = d / 1000
+        z0 = 60.0 / math.sqrt(er) * math.log(D_m / d_m)
+        r_in = d_m / 2
+        r_out = D_m / 2
+
+        n = 60
+        step = (f_stop / f_start) ** (1 / (n - 1))
+        points = []
+        f = f_start
+        for _ in range(n):
+            f_hz = f * 1e6
+            rs = math.sqrt(math.pi * f_hz * MU0 / sigma)
+            ac = 8.686 * rs / (4 * math.pi * z0) * (1 / r_in + 1 / r_out)
+            ad = 8.686 * math.pi * f_hz * math.sqrt(MU0 * EPS0 * er) * tan_delta
+            points.append({
+                "f": round(f, 4),
+                "total": round(ac + ad, 5),
+                "cond": round(ac, 5),
+                "diel": round(ad, 5),
+            })
+            f *= step
+
+        return jsonify({"points": points, "z0": round(z0, 2)})
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/smith", methods=["POST"])
+def api_smith():
+    """
+    Smith-Diagramm: Reflexionsfaktor einer Lastimpedanz.
+    Eingaben: r (Ω), x (Ω), z0 (Ω).
+    """
+    try:
+        data = request.get_json()
+        r = float(data["r"])
+        x = float(data["x"])
+        z0 = float(data.get("z0") or 50)
+
+        if z0 <= 0 or r < 0:
+            return jsonify({"error": "Z0 muss positiv und R nicht-negativ sein."}), 400
+
+        zl = complex(r, x)
+        gamma = (zl - z0) / (zl + z0)
+        mag = abs(gamma)
+
+        vswr = round((1 + mag) / (1 - mag), 3) if mag < 1 else None
+        rl = round(-20 * math.log10(mag), 2) if mag > 0 else None
+
+        return jsonify({
+            "gamma_re": round(gamma.real, 4),
+            "gamma_im": round(gamma.imag, 4),
+            "gamma_mag": round(mag, 4),
+            "vswr": vswr,
+            "return_loss": rl,
+            "r_norm": round(r / z0, 4),
+            "x_norm": round(x / z0, 4),
+        })
+    except (KeyError, ValueError, TypeError, ZeroDivisionError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/pattern", methods=["POST"])
+def api_pattern():
+    """
+    Strahlungsdiagramm eines mittengespeisten Dipols.
+    Eingabe: length (Dipollänge in Wellenlängen).
+    """
+    try:
+        data = request.get_json()
+        l_lambda = float(data["length"])
+
+        if l_lambda <= 0:
+            return jsonify({"error": "Länge muss positiv sein."}), 400
+
+        beta = math.pi * l_lambda  # k·L/2
+        raw = []
+        amax = 0.0
+        for deg in range(0, 361, 2):
+            th = math.radians(deg)
+            s = math.sin(th)
+            if abs(s) < 1e-6:
+                amp = 0.0
+            else:
+                amp = abs((math.cos(beta * math.cos(th)) - math.cos(beta)) / s)
+            raw.append((deg, amp))
+            amax = max(amax, amp)
+
+        if amax == 0:
+            amax = 1.0
+        points = [{"angle": deg, "amp": round(amp / amax, 4)} for deg, amp in raw]
+
+        amp_at = {p["angle"]: p["amp"] for p in points}
+        hpbw = None
+        deg = 90
+        while deg >= 0 and amp_at.get(deg, 0) >= 0.7071:
+            deg -= 2
+        if deg < 90:
+            hpbw = 2 * (90 - deg)
+
+        return jsonify({"points": points, "hpbw": hpbw})
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

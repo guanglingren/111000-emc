@@ -286,6 +286,33 @@ button[type="submit"]:disabled {
   cursor: not-allowed;
 }
 
+/* ===== Graphical tools ===== */
+.graph-panel {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+}
+
+.graph-panel canvas {
+  width: 100%;
+  height: auto;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.graph-readout {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.graph-readout.error {
+  color: var(--warn);
+}
+
 /* ===== Results ===== */
 .results {
   padding: 24px 32px;
@@ -420,7 +447,8 @@ footer .hint {
     padding: 20px;
   }
 
-  .results {
+  .results,
+  .graph-panel {
     padding: 20px;
   }
 

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=6">
 </head>
 <body>
 
@@ -691,6 +691,105 @@
   </div>
 </section>
 
+<!-- ====== Loss vs Frequency (graph) ====== -->
+<section id="sweep" class="card">
+  <div class="card-head">
+    <span class="tag">19</span>
+    <h2>Dämpfung über Frequenz</h2>
+    <p>Zeichnet Leiter-, Dielektrik- und Gesamtdämpfung eines Koaxialkabels über einen Frequenzbereich.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="sweep">
+      <label>Start-Frequenz
+        <input name="f_start" type="number" step="0.1" value="1" required>
+        <em>MHz</em>
+      </label>
+      <label>Stopp-Frequenz
+        <input name="f_stop" type="number" step="0.1" value="10000" required>
+        <em>MHz</em>
+      </label>
+      <label>Außendurchmesser <span>D</span>
+        <input name="D" type="number" step="0.001" value="7.5" required>
+        <em>mm</em>
+      </label>
+      <label>Innendurchmesser <span>d</span>
+        <input name="d" type="number" step="0.001" value="2.95" required>
+        <em>mm</em>
+      </label>
+      <label>Permittivität <span>εᵣ</span>
+        <input name="er" type="number" step="0.01" value="2.25" required>
+        <em></em>
+      </label>
+      <label>Verlustfaktor <span>tanδ</span>
+        <input name="tan_delta" type="number" step="0.0001" value="0.0005" required>
+        <em></em>
+      </label>
+      <label>Leitfähigkeit
+        <input name="sigma" type="number" step="1" value="58000000" required>
+        <em>S/m</em>
+      </label>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="sweep">
+      <canvas width="520" height="340"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Smith Chart (graph) ====== -->
+<section id="smith" class="card">
+  <div class="card-head">
+    <span class="tag">20</span>
+    <h2>Smith-Diagramm</h2>
+    <p>Stellt eine Lastimpedanz im Smith-Diagramm dar, mit Reflexionsfaktor und VSWR-Kreis.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="smith">
+      <label>Lastwiderstand <span>R</span>
+        <input name="r" type="number" step="0.1" value="75" required>
+        <em>Ω</em>
+      </label>
+      <label>Lastreaktanz <span>X</span>
+        <input name="x" type="number" step="0.1" value="30" required>
+        <em>Ω</em>
+      </label>
+      <label>Bezugsimpedanz <span>Z₀</span>
+        <input name="z0" type="number" step="0.1" value="50" required>
+        <em>Ω</em>
+      </label>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="smith">
+      <canvas width="380" height="380"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Antenna Pattern (graph) ====== -->
+<section id="pattern" class="card">
+  <div class="card-head">
+    <span class="tag">21</span>
+    <h2>Antennen-Strahlungsdiagramm</h2>
+    <p>Polardiagramm der Strahlungscharakteristik eines mittengespeisten Dipols.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="pattern">
+      <label>Dipollänge <span>L / λ</span>
+        <input name="length" type="number" step="0.01" value="0.5" required>
+        <em>λ</em>
+      </label>
+      <p class="hint-line">0,5 = Halbwellendipol · 1,0 = Ganzwellendipol · &gt;1 erzeugt Nebenkeulen.</p>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="pattern">
+      <canvas width="380" height="380"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
@@ -795,6 +894,163 @@ document.querySelectorAll("form[data-form]").forEach(form => {
       btn.disabled = false; btn.textContent = "Berechnen";
     }
   });
+});
+
+/* ===== Graphical tools (canvas) ===== */
+function setReadout(canvas, text) {
+  canvas.parentElement.querySelector(".graph-readout").textContent = text;
+}
+
+function drawSweep(canvas, result) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const pad = {l: 54, r: 14, t: 22, b: 38};
+  const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+  const pts = result.points;
+  const lx0 = Math.log10(pts[0].f), lx1 = Math.log10(pts[pts.length - 1].f);
+  let ymax = 0;
+  pts.forEach(p => { ymax = Math.max(ymax, p.total); });
+  ymax = ymax * 1.1 || 1;
+  const X = f => pad.l + (Math.log10(f) - lx0) / (lx1 - lx0) * pw;
+  const Y = v => pad.t + ph - v / ymax * ph;
+
+  ctx.strokeStyle = "#2a2d33"; ctx.fillStyle = "#8a8f99";
+  ctx.font = "10px monospace"; ctx.lineWidth = 1;
+  for (let d = Math.ceil(lx0); d <= Math.floor(lx1); d++) {
+    const dv = Math.pow(10, d), x = X(dv);
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.fillText(dv >= 1000 ? (dv / 1000) + "G" : dv + "M", x, H - 22);
+  }
+  for (let i = 0; i <= 4; i++) {
+    const v = ymax * i / 4, y = Y(v);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke();
+    ctx.textAlign = "right"; ctx.fillText(v.toFixed(2), pad.l - 6, y + 3);
+  }
+  ctx.textAlign = "center";
+  ctx.fillText("Frequenz", pad.l + pw / 2, H - 6);
+
+  const line = (key, color, wd) => {
+    ctx.strokeStyle = color; ctx.lineWidth = wd; ctx.beginPath();
+    pts.forEach((p, i) => {
+      const x = X(p.f), y = Y(p[key]);
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.stroke();
+  };
+  line("cond", "#8a8f99", 1.5);
+  line("diel", "#555a63", 1.5);
+  line("total", "#d4ff3f", 2);
+
+  ctx.textAlign = "left";
+  [["Gesamt", "#d4ff3f"], ["Leiter", "#8a8f99"], ["Dielektr.", "#555a63"]].forEach((L, i) => {
+    ctx.fillStyle = L[1]; ctx.fillRect(pad.l + 6 + i * 96, pad.t - 12, 12, 3);
+    ctx.fillStyle = "#8a8f99"; ctx.fillText(L[0], pad.l + 22 + i * 96, pad.t - 8);
+  });
+  setReadout(canvas, `Z₀ ≈ ${result.z0} Ω · Dämpfung in dB/m`);
+}
+
+function drawSmith(canvas, result) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 14;
+  const PX = g => cx + g * R, PY = g => cy - g * R;
+
+  ctx.strokeStyle = "#2a2d33"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.stroke();
+
+  [0, 0.2, 0.5, 1, 2, 5].forEach(r => {
+    ctx.beginPath(); ctx.arc(PX(r / (r + 1)), cy, R / (r + 1), 0, 2 * Math.PI); ctx.stroke();
+  });
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.clip();
+  [0.2, 0.5, 1, 2, 5].forEach(x => {
+    [1, -1].forEach(sgn => {
+      const xx = x * sgn;
+      ctx.beginPath();
+      ctx.arc(PX(1), PY(1 / xx), R / Math.abs(xx), 0, 2 * Math.PI);
+      ctx.stroke();
+    });
+  });
+  ctx.restore();
+
+  ctx.strokeStyle = "#ff7849"; ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.arc(cx, cy, result.gamma_mag * R, 0, 2 * Math.PI); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const px = PX(result.gamma_re), py = PY(result.gamma_im);
+  ctx.fillStyle = "#d4ff3f";
+  ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fill();
+  ctx.strokeStyle = "#0a0b0d"; ctx.lineWidth = 1.5; ctx.stroke();
+
+  const sign = result.gamma_im >= 0 ? "+" : "−";
+  setReadout(canvas, `Γ = ${result.gamma_re} ${sign} j${Math.abs(result.gamma_im)} · |Γ| = ${result.gamma_mag} · VSWR = ${result.vswr ?? "∞"} · RL = ${result.return_loss ?? "0"} dB`);
+}
+
+function drawPattern(canvas, result) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 20;
+
+  ctx.strokeStyle = "#2a2d33"; ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    ctx.beginPath(); ctx.arc(cx, cy, f * R, 0, 2 * Math.PI); ctx.stroke();
+  });
+  for (let a = 0; a < 360; a += 30) {
+    const t = a * Math.PI / 180;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(t), cy + R * Math.sin(t)); ctx.stroke();
+  }
+
+  ctx.strokeStyle = "#d4ff3f"; ctx.fillStyle = "rgba(212,255,63,0.12)"; ctx.lineWidth = 2;
+  ctx.beginPath();
+  result.points.forEach((p, i) => {
+    const t = (p.angle - 90) * Math.PI / 180;
+    const r = p.amp * R;
+    const x = cx + r * Math.cos(t), y = cy + r * Math.sin(t);
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  setReadout(canvas, result.hpbw != null
+    ? `Halbwertsbreite (HPBW) ≈ ${result.hpbw}°`
+    : "Keine ausgeprägte Hauptkeule");
+}
+
+const graphDrawers = {sweep: drawSweep, smith: drawSmith, pattern: drawPattern};
+
+document.querySelectorAll("form[data-graph]").forEach(form => {
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = form.dataset.graph;
+    const data = Object.fromEntries(new FormData(form).entries());
+    const btn = form.querySelector("button");
+    btn.disabled = true; btn.textContent = "···";
+
+    const panel = document.querySelector(`[data-graph-panel="${name}"]`);
+    const readout = panel.querySelector(".graph-readout");
+    try {
+      const result = await postJSON(`/api/${name}`, data);
+      if (result.error) {
+        readout.textContent = result.error;
+        readout.classList.add("error");
+      } else {
+        readout.classList.remove("error");
+        graphDrawers[name](panel.querySelector("canvas"), result);
+      }
+    } catch (err) {
+      readout.textContent = "Netzwerkfehler — bitte erneut versuchen.";
+      readout.classList.add("error");
+      console.error(err);
+    } finally {
+      btn.disabled = false; btn.textContent = "Zeichnen";
+    }
+  });
+  form.requestSubmit();
 });
 </script>
 

@@ -24,6 +24,12 @@ Built with Flask. Designed to deploy on Render's free tier.
 17. **HF Band & Antenna Formulas** — identifies the HF amateur band and computes λ/4 and λ/2 antenna lengths.
 18. **Electrical Length Calculator** — converts electrical degrees to physical line length and vice versa for a given frequency and velocity factor.
 
+### Graphical tools
+
+19. **Loss vs Frequency** — plots conductor, dielectric and total coaxial-cable attenuation across a frequency sweep.
+20. **Smith Chart** — plots a load impedance on the Smith chart with reflection coefficient and VSWR circle.
+21. **Antenna Radiation Pattern** — polar plot of the radiation pattern of a centre-fed dipole.
+
 ## Run locally
 
 ```bash
