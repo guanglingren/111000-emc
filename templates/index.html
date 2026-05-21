@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=13">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=14">
 <script>
   (function () {
     var t = "light";
@@ -76,8 +76,8 @@
         <div><span class="label">Gauss</span><span class="value" data-key="gauss">—</span><em>G</em></div>
         <div><span class="label">Feldstärke</span><span class="value" data-key="am">—</span><em>A/m</em></div>
         <div><span class="label">Oersted</span><span class="value" data-key="oersted">—</span><em>Oe</em></div>
-        <div><span class="label">dBpT</span><span class="value" data-key="dbpt">—</span><em>dBpT</em></div>
-        <div><span class="label">dBµA/m</span><span class="value" data-key="dbuam">—</span><em>dBµA/m</em></div>
+        <div><span class="label nocaps">dBpT</span><span class="value" data-key="dbpt">—</span><em>dBpT</em></div>
+        <div><span class="label nocaps">dBµA/m</span><span class="value" data-key="dbuam">—</span><em>dBµA/m</em></div>
       </div>
     </div>
   </div>
@@ -194,14 +194,14 @@
       <button type="submit">Berechnen</button>
     </form>
     <div class="results" data-result="db">
-      <div class="r-main"><span class="label">dBµV</span><span class="value" data-key="dbuv">—</span></div>
+      <div class="r-main"><span class="label nocaps">dBµV</span><span class="value" data-key="dbuv">—</span></div>
       <div class="r-grid">
-        <div><span class="label">dBmV</span><span class="value" data-key="dbmv">—</span><em>dBmV</em></div>
-        <div><span class="label">dBV</span><span class="value" data-key="dbv">—</span><em>dBV</em></div>
-        <div><span class="label">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
-        <div><span class="label">dBmA</span><span class="value" data-key="dbma">—</span><em>dBmA</em></div>
-        <div><span class="label">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
-        <div><span class="label">dBW</span><span class="value" data-key="dbw">—</span><em>dBW</em></div>
+        <div><span class="label nocaps">dBmV</span><span class="value" data-key="dbmv">—</span><em>dBmV</em></div>
+        <div><span class="label nocaps">dBV</span><span class="value" data-key="dbv">—</span><em>dBV</em></div>
+        <div><span class="label nocaps">dBµA</span><span class="value" data-key="dbua">—</span><em>dBµA</em></div>
+        <div><span class="label nocaps">dBmA</span><span class="value" data-key="dbma">—</span><em>dBmA</em></div>
+        <div><span class="label nocaps">dBm</span><span class="value" data-key="dbm">—</span><em>dBm</em></div>
+        <div><span class="label nocaps">dBW</span><span class="value" data-key="dbw">—</span><em>dBW</em></div>
         <div><span class="label">Spannung</span><span class="value" data-key="v">—</span><em>V</em></div>
         <div><span class="label">Spannung</span><span class="value" data-key="uv">—</span><em>µV</em></div>
         <div><span class="label">Strom</span><span class="value" data-key="a">—</span><em>A</em></div>

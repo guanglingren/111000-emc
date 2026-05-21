@@ -621,6 +621,10 @@ button[type="submit"]:disabled {
   letter-spacing: 0.08em;
 }
 
+.label.nocaps {
+  text-transform: none;
+}
+
 .r-grid .value {
   font-size: 16px;
   color: var(--text);
