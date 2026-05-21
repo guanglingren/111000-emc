@@ -542,6 +542,51 @@
   </div>
 </section>
 
+<!-- ====== Measurement Chain (graph) ====== -->
+<section id="chain" class="card">
+  <div class="card-head">
+    <span class="tag">15</span>
+    <h2>Messkette (Störaussendung)</h2>
+    <p>Rechnet die Empfängeranzeige über Antennenfaktor, Kabeldämpfung, Vorverstärker und Dämpfungsglied auf den tatsächlichen Störpegel zurück.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-graph="chain">
+      <label>Messart
+        <select name="mode">
+          <option value="radiated">Gestrahlt (E-Feld)</option>
+          <option value="conducted">Leitungsgebunden</option>
+        </select>
+        <em></em>
+      </label>
+      <label>Empfängeranzeige
+        <input name="v_rx" type="number" step="any" value="40" required>
+        <em>dBµV</em>
+      </label>
+      <label>Antennen-/Wandlerfaktor
+        <input name="factor" type="number" step="any" value="12">
+        <em>dB</em>
+      </label>
+      <label>Kabeldämpfung
+        <input name="cable" type="number" step="any" value="2">
+        <em>dB</em>
+      </label>
+      <label>Vorverstärkung
+        <input name="preamp" type="number" step="any" value="20">
+        <em>dB</em>
+      </label>
+      <label>Dämpfungsglied
+        <input name="atten" type="number" step="any" value="0">
+        <em>dB</em>
+      </label>
+      <button type="submit">Zeichnen</button>
+    </form>
+    <div class="graph-panel" data-graph-panel="chain">
+      <canvas width="480" height="210"></canvas>
+      <div class="graph-readout">—</div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
@@ -859,7 +904,64 @@ function drawFilter(panel, result) {
   setReadout(bode, `Grenzfrequenz fc ≈ ${fmtFreq(result.fc)} · ${kind} · ${result.slope} dB/Dekade`);
 }
 
-const graphDrawers = {smith: drawSmith, pattern: drawPattern, filter: drawFilter};
+function drawChain(panel, result) {
+  const canvas = panel.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const c = themeColors();
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // result headline
+  ctx.fillStyle = c.dim; ctx.font = "11px monospace"; ctx.textAlign = "left";
+  ctx.fillText(result.result_label.toUpperCase(), 16, 24);
+  ctx.fillStyle = c.accent; ctx.font = "600 25px monospace";
+  ctx.fillText(result.result + " " + result.result_unit, 16, 50);
+  ctx.fillStyle = c.faint; ctx.font = "11px monospace";
+  ctx.fillText("(" + result.result_linear + " " + result.result_linear_unit + ")", 16, 70);
+
+  // signal-chain blocks
+  const first = result.mode === "radiated" ? "Antenne" : "LISN";
+  const blocks = [
+    {t: first, v: "+" + result.factor},
+    {t: "Kabel", v: "+" + result.cable},
+    {t: "Vorverst.", v: "−" + result.preamp},
+    {t: "Dämpfung", v: "+" + result.atten},
+    {t: "Empfänger", v: result.v_rx + ""},
+  ];
+  const n = blocks.length;
+  const bw = 70, bh = 40, gap = (W - 32 - n * bw) / (n - 1);
+  const y = 110;
+  ctx.lineWidth = 1.4;
+  blocks.forEach((b, i) => {
+    const x = 16 + i * (bw + gap);
+    ctx.fillStyle = c.bg; ctx.strokeStyle = c.dim;
+    ctx.fillRect(x, y, bw, bh); ctx.strokeRect(x, y, bw, bh);
+    ctx.textAlign = "center";
+    ctx.fillStyle = c.dim; ctx.font = "10px monospace";
+    ctx.fillText(b.t, x + bw / 2, y + 17);
+    ctx.fillStyle = c.accent; ctx.font = "11px monospace";
+    ctx.fillText(b.v, x + bw / 2, y + 31);
+    if (i < n - 1) {
+      const ax = x + bw, ax2 = x + bw + gap;
+      ctx.strokeStyle = c.faint;
+      ctx.beginPath(); ctx.moveTo(ax, y + bh / 2); ctx.lineTo(ax2 - 4, y + bh / 2); ctx.stroke();
+      ctx.fillStyle = c.faint;
+      ctx.beginPath();
+      ctx.moveTo(ax2 - 4, y + bh / 2);
+      ctx.lineTo(ax2 - 10, y + bh / 2 - 4);
+      ctx.lineTo(ax2 - 10, y + bh / 2 + 4);
+      ctx.closePath(); ctx.fill();
+    }
+  });
+
+  ctx.fillStyle = c.faint; ctx.font = "10px monospace"; ctx.textAlign = "left";
+  ctx.fillText("EUT ▸", 16, y - 8);
+  ctx.fillText("dB-Beiträge unter den Blöcken", 16, y + bh + 24);
+
+  setReadout(canvas, `${result.result_label} = Empfänger + Faktor + Kabel + Dämpfung − Vorverstärker = ${result.result} ${result.result_unit}`);
+}
+
+const graphDrawers = {smith: drawSmith, pattern: drawPattern, filter: drawFilter, chain: drawChain};
 
 document.querySelectorAll("form[data-graph]").forEach(form => {
   form.addEventListener("submit", async e => {

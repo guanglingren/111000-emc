@@ -636,5 +636,51 @@ def api_filter():
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 
+@app.route("/api/chain", methods=["POST"])
+def api_chain():
+    """
+    Messkette für Störaussendung (gestrahlt / leitungsgebunden).
+    Rekonstruiert aus der Empfängeranzeige den tatsächlichen Störpegel.
+    Eingaben: mode, v_rx (dBµV), factor (AF in dB/m bzw. Wandlerfaktor in dB),
+              cable (dB), preamp (dB), atten (dB).
+    """
+    try:
+        data = request.get_json()
+        mode = data.get("mode", "radiated")
+        v_rx = float(data["v_rx"])
+        factor = float(data.get("factor") or 0)
+        cable = float(data.get("cable") or 0)
+        preamp = float(data.get("preamp") or 0)
+        atten = float(data.get("atten") or 0)
+
+        if mode not in ("radiated", "conducted"):
+            return jsonify({"error": "Ungültige Messart."}), 400
+
+        result = v_rx + cable + atten + factor - preamp
+
+        out = {
+            "mode": mode,
+            "v_rx": round(v_rx, 2),
+            "factor": round(factor, 2),
+            "cable": round(cable, 2),
+            "preamp": round(preamp, 2),
+            "atten": round(atten, 2),
+            "result": round(result, 2),
+        }
+        if mode == "radiated":
+            out["result_label"] = "E-Feld"
+            out["result_unit"] = "dBµV/m"
+            out["result_linear"] = round(10 ** (result / 20) * 1e-6, 6)
+            out["result_linear_unit"] = "V/m"
+        else:
+            out["result_label"] = "Störspannung"
+            out["result_unit"] = "dBµV"
+            out["result_linear"] = round(10 ** (result / 20), 4)
+            out["result_linear_unit"] = "µV"
+        return jsonify(out)
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
