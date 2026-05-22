@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Über mich — EMC Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=14">
+<script>
+  (function () {
+    var t = "light";
+    try {
+      t = localStorage.getItem("emc-theme") || "light";
+    } catch (e) {}
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+</head>
+<body data-view="detail">
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-top">
+      <a class="back-btn" href="/" aria-label="Zurück zur Übersicht" style="display:inline-flex">‹ Übersicht</a>
+      <a class="brand" href="/about" aria-label="Zur persönlichen Vorstellung">
+        <span class="brand-mark">⌬</span>
+        <div>
+          <h1>EMC Tools</h1>
+          <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
+        </div>
+      </a>
+      <span style="width:34px"></span>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="card card-wide">
+  <div class="card-head">
+    <span class="tag">⌬</span>
+    <h2>Über mich</h2>
+    <p>Persönliche Vorstellung — bitte mit eigenen Angaben ersetzen.</p>
+  </div>
+  <div class="card-body">
+    <div class="about-body">
+      <p><strong>Name</strong> — [Ihr Name]</p>
+      <p><strong>Rolle</strong> — [EMV-Ingenieur / Prüflabor / …]</p>
+      <p><strong>Über</strong> — [Kurze Beschreibung Ihrer Arbeit und Interessen im Bereich
+      elektromagnetische Verträglichkeit.]</p>
+      <p><strong>Kontakt</strong> — [E-Mail / GitHub / LinkedIn]</p>
+    </div>
+    <p class="hint-line">Diese Seite ist eine Vorlage. Inhalte in <code>templates/about.html</code> anpassen.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><em>Mit Flask erstellt · Gehostet auf Render</em></p>
+</footer>
+
+</body>
+</html>

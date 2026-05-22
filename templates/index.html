@@ -24,13 +24,13 @@
   <div class="masthead-inner">
     <div class="masthead-top">
       <button class="back-btn" type="button" aria-label="Zurück zur Übersicht">‹ Übersicht</button>
-      <div class="brand">
+      <a class="brand" href="/about" aria-label="Zur persönlichen Vorstellung">
         <span class="brand-mark">⌬</span>
         <div>
           <h1>EMC Tools</h1>
           <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
         </div>
-      </div>
+      </a>
       <button class="theme-toggle" type="button" aria-label="Design wechseln">☀</button>
     </div>
     <nav class="tab-nav" aria-label="Rechner"></nav>
@@ -465,6 +465,46 @@
       </div>
     </div>
     <p class="hint-line">Beispielwerte — durch die Kalibrier- und Validierungsdaten Ihres Labors ersetzen. Standardunsicherheit u = Wert ÷ Divisor der Verteilung · u_c = √(Σ u²) · U = 2 · u_c.</p>
+  </div>
+</section>
+
+<!-- ====== Distance Conversion ====== -->
+<section id="distance" class="card" data-category="lab">
+  <div class="card-head">
+    <span class="tag">12</span>
+    <h2>Messabstand-Umrechnung</h2>
+    <p>Rechnet einen gestrahlten Störpegel von einem Messabstand auf einen anderen um — z.B. 10 m ↔ 3 m für normgerechte Grenzwertvergleiche.</p>
+  </div>
+  <div class="card-body">
+    <form class="inputs" data-form="distance">
+      <label>Gemessener Pegel
+        <input name="value" type="number" step="any" value="40" required>
+        <em>dBµV/m</em>
+      </label>
+      <label>Messabstand
+        <input name="d_from" type="number" step="any" value="10" required>
+        <em>m</em>
+      </label>
+      <label>Zielabstand
+        <input name="d_to" type="number" step="any" value="3" required>
+        <em>m</em>
+      </label>
+      <label>Abnahme
+        <input name="decay" type="number" step="any" value="20">
+        <em>dB/Dekade</em>
+      </label>
+      <p class="hint-line">20 dB/Dekade gilt für Fernfeld (E ∝ 1/d). Für Nahfeld ggf. höheren Wert wählen.</p>
+      <button type="submit">Berechnen</button>
+    </form>
+    <div class="results" data-result="distance">
+      <div class="r-main"><span class="label">Pegel am Zielabstand</span><span class="value" data-key="result">—</span><span class="unit">dBµV/m</span></div>
+      <div class="r-grid">
+        <div><span class="label">Gemessener Pegel</span><span class="value" data-key="value">—</span><em>dBµV/m</em></div>
+        <div><span class="label">Korrektur</span><span class="value" data-key="delta">—</span><em>dB</em></div>
+        <div><span class="label">Messabstand</span><span class="value" data-key="d_from">—</span><em>m</em></div>
+        <div><span class="label">Zielabstand</span><span class="value" data-key="d_to">—</span><em>m</em></div>
+      </div>
+    </div>
   </div>
 </section>
 
