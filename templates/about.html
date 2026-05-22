@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Über mich — EMC Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=6">
+<style>
+  .about-wrap {
+    max-width: 680px;
+    margin: 64px auto;
+    padding: 0 32px;
+  }
+  .about-wrap h2 {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: var(--accent);
+  }
+  .about-wrap p {
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .about-wrap a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .about-wrap a:hover { text-decoration: underline; }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    font-size: 12px;
+    color: var(--text-faint);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .back-link:hover { color: var(--text-dim); }
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <a href="/about" class="brand-link">
+        <span class="brand-mark">⌬</span>
+        <div>
+          <h1>EMC Tools</h1>
+          <p class="sub">Rechner für EMV- und HF-Ingenieure</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="about-wrap">
+    <a href="/" class="back-link">← Zurück zu den Rechnern</a>
+
+    <h2>Über mich</h2>
+
+    <p>
+      <!-- Hier kannst du deine Vorstellung eintragen. -->
+      Hallo! Ich bin ein EMV- und HF-Ingenieur mit Interesse an elektromagnetischer
+      Verträglichkeit, Hochfrequenztechnik und praktischen Ingenieurstools.
+    </p>
+
+    <p>
+      Dieses Projekt entstand aus dem Bedürfnis heraus, häufig benötigte EMV-Berechnungen
+      schnell und ohne Aufwand im Browser durchführen zu können — ohne externe Software
+      oder komplizierte Setups.
+    </p>
+
+    <hr class="divider">
+
+    <p>
+      <!-- Kontakt, Links, Social Media etc. hier ergänzen. -->
+      Fragen oder Anregungen? Gerne per E-Mail oder GitHub-Issue.
+    </p>
+  </div>
+</main>
+
+<footer>
+  <p><em>Mit Flask erstellt · Gehostet auf Render</em></p>
+</footer>
+
+</body>
+</html>

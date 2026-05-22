@@ -385,6 +385,44 @@ def api_chain():
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
 
 
+@app.route("/api/messabstand", methods=["POST"])
+def api_messabstand():
+    """
+    Messabstand-Umrechnung: Skaliert Feldstärke-Messwerte zwischen zwei Abständen.
+    Fernfeldformel: E2 = E1 + 20·log10(d1/d2)
+    Eingaben: e1 (dBµV/m), d1 (m), d2 (m)
+    """
+    try:
+        data = request.get_json()
+        e1_db = float(data["e1"])
+        d1 = float(data["d1"])
+        d2 = float(data["d2"])
+
+        if d1 <= 0 or d2 <= 0:
+            return jsonify({"error": "Abstände müssen positiv sein."}), 400
+
+        correction_db = 20 * math.log10(d1 / d2)
+        e2_db = e1_db + correction_db
+        e1_uvm = 10 ** (e1_db / 20)
+        e2_uvm = 10 ** (e2_db / 20)
+
+        return jsonify({
+            "e2_dbuvm": round(e2_db, 2),
+            "correction_db": round(correction_db, 2),
+            "e1_uvm": round(e1_uvm, 4),
+            "e2_uvm": round(e2_uvm, 4),
+            "d1_m": round(d1, 3),
+            "d2_m": round(d2, 3),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
 @app.route("/api/ri", methods=["POST"])
 def api_ri():
     """
