@@ -127,6 +127,12 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+a.brand:hover .brand-mark {
+  color: var(--accent-hover);
 }
 
 .brand-link {
@@ -646,6 +652,22 @@ button[type="submit"]:disabled {
   font-size: 10px;
   color: var(--text-faint);
   margin-left: 4px;
+}
+
+/* ===== About page ===== */
+.about-body {
+  line-height: 1.7;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.about-body p {
+  margin: 0 0 10px;
+}
+
+.about-body strong {
+  color: var(--accent);
+  margin-right: 6px;
 }
 
 /* ===== Footer ===== */

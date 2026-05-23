@@ -24,6 +24,11 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
 @app.route("/api/magfield", methods=["POST"])
 def api_magfield():
     """
@@ -494,6 +499,38 @@ def api_bci():
             "zt_ohm": round(zt_lin, 4),
             "monitor_dbuv": round(v_dbuv, 2),
             "monitor_uv": round(v_uv, 2),
+        })
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
+
+
+@app.route("/api/distance", methods=["POST"])
+def api_distance():
+    """
+    Messabstand-Umrechnung für gestrahlte Störaussendung.
+    Rechnet einen Pegel von einem Messabstand auf einen anderen um.
+    Eingaben: value (dBµV/m), d_from (m), d_to (m), decay (dB/Dekade).
+    """
+    try:
+        data = request.get_json()
+        value = float(data["value"])
+        d_from = float(data["d_from"])
+        d_to = float(data["d_to"])
+        decay = float(data.get("decay") or 20)
+
+        if d_from <= 0 or d_to <= 0:
+            return jsonify({"error": "Abstände müssen positiv sein."}), 400
+
+        delta = decay * math.log10(d_from / d_to)
+        result = value + delta
+
+        return jsonify({
+            "result": round(result, 2),
+            "value": round(value, 2),
+            "d_from": round(d_from, 3),
+            "d_to": round(d_to, 3),
+            "decay": round(decay, 1),
+            "delta": round(delta, 2),
         })
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"error": f"Ungültige Eingabe: {e}"}), 400
